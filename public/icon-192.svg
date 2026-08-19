@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="gserviaBg192" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#090E1A"/>
+      <stop offset="50%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="gserviaGateBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="50%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#1D4ED8"/>
+    </linearGradient>
+    <linearGradient id="gserviaGateCyan" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06B6D4"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
+    </linearGradient>
+    <linearGradient id="gserviaPrism" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="50%" stop-color="#A855F7"/>
+      <stop offset="100%" stop-color="#EC4899"/>
+    </linearGradient>
+    <filter id="glow192" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Container Surface with Diamond Chamfer Corners -->
+  <rect width="192" height="192" rx="44" fill="url(#gserviaBg192)"/>
+  <rect x="3" y="3" width="186" height="186" rx="41" fill="none" stroke="rgba(56, 189, 248, 0.25)" stroke-width="2"/>
+  
+  <!-- Outer Digital Gateway Ring -->
+  <circle cx="96" cy="96" r="66" fill="none" stroke="#1E293B" stroke-width="4"/>
+  <path d="M96 30 A66 66 0 0 1 162 96" fill="none" stroke="url(#gserviaGateCyan)" stroke-width="4" stroke-linecap="round"/>
+  <path d="M96 162 A66 66 0 0 1 30 96" fill="none" stroke="url(#gserviaGateBlue)" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Center Geometric 'G' Gateway Emblem -->
+  <g filter="url(#glow192)">
+    <!-- Top Arc of G -->
+    <path d="M128 66 C119 55 108 50 96 50 C70.6 50 50 70.6 50 96 C50 121.4 70.6 142 96 142 C120 142 139 125 142 101 L96 101 L96 85 L158 85 C159.5 91 160 97 160 103 C160 133.4 133.4 158 100 158 C63.5 158 34 128.5 34 92 C34 55.5 63.5 26 100 26 C120.5 26 138.8 35.3 151 50 L128 66 Z" 
+          fill="none"/>
+
+    <!-- Distinct GServia Geometric Monogram Path -->
+    <path d="M 132 62 A 52 52 0 1 0 148 96 L 96 96 L 96 80 L 164 80 A 68 68 0 1 1 144 48 Z" 
+          fill="url(#gserviaGateBlue)"/>
+          
+    <!-- Core Hub Connection Node -->
+    <circle cx="96" cy="96" r="14" fill="#090E1A" stroke="#38BDF8" stroke-width="3"/>
+    <circle cx="96" cy="96" r="6" fill="#38BDF8"/>
+  </g>
+
+  <!-- 4 Radiant Digital Satellite Sparks -->
+  <circle cx="96" cy="24" r="3.5" fill="#4285F4"/>
+  <circle cx="168" cy="96" r="3.5" fill="#EA4335"/>
+  <circle cx="96" cy="168" r="3.5" fill="#34A853"/>
+  <circle cx="24" cy="96" r="3.5" fill="#FBBC05"/>
+</svg>

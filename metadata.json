@@ -1,0 +1,6 @@
+{
+  "name": "GServia — Global Google Services Hub",
+  "description": "GServia is an independent global platform and gateway that helps users discover, organize, and directly access official Google services from one powerful interface.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

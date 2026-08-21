@@ -125,10 +125,18 @@ interface ServiceIconProps {
 
 export const ServiceIcon: React.FC<ServiceIconProps> = ({
   name,
-  className = 'w-6 h-6',
+  className = 'w-6 h-6 text-yellow-400',
   size,
   colorHex,
 }) => {
   const IconComponent = iconMap[name] || Globe;
-  return <IconComponent className={className} size={size} style={colorHex ? { color: colorHex } : undefined} />;
+  // Always render with vivid yellow (#FACC15) as requested by user
+  const effectiveColor = '#FACC15';
+  return (
+    <IconComponent 
+      className={`${className} text-yellow-400`} 
+      size={size} 
+      style={{ color: effectiveColor }} 
+    />
+  );
 };

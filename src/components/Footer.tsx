@@ -49,11 +49,11 @@ export const Footer: React.FC<FooterProps> = ({
   };
 
   return (
-    <footer id="footer" className="bg-[#090E1A] text-slate-300 pt-16 pb-12 border-t border-slate-800">
+    <footer id="footer" className="bg-black text-white pt-16 pb-12 border-t-2 border-[#222222]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Main Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-slate-800">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-[#222222]">
           
           {/* Col 1: Brand & Overview */}
           <div className="space-y-4">
@@ -61,28 +61,28 @@ export const Footer: React.FC<FooterProps> = ({
               <GServiaLogo size="md" subtitle={t.brandTagline} />
             </div>
 
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-xs text-neutral-200 leading-relaxed font-medium">
               {lang === 'ar' 
                 ? 'GServia هي بوابتك العالمية المستقلة لاكتشاف وتنظيم والوصول المباشر إلى خدمات Google الرسمية بسرعة وأمان.'
                 : 'GServia is your independent global gateway to discover, organize, and directly access official Google services with speed and security.'}
             </p>
 
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-300 text-xs font-medium">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#111111] border border-[#333333] text-white text-xs font-bold">
+              <ShieldCheck className="w-4 h-4 text-yellow-400" />
               <span>{lang === 'ar' ? 'منصة مستقلة وآمنة 100%' : '100% Secure Independent Platform'}</span>
             </div>
           </div>
 
           {/* Col 2: Quick Links */}
           <div>
-            <h4 className="font-bold text-white text-sm mb-4">
+            <h4 className="font-black text-white text-sm mb-4">
               {t.quickLinks}
             </h4>
-            <ul className="space-y-2.5 text-xs text-slate-400">
+            <ul className="space-y-2.5 text-xs text-neutral-200 font-bold">
               <li>
                 <button 
                   onClick={() => scrollToSection('hero')} 
-                  className="hover:text-white transition-colors"
+                  className="hover:text-yellow-400 transition-colors"
                 >
                   {t.navHome}
                 </button>
@@ -90,7 +90,7 @@ export const Footer: React.FC<FooterProps> = ({
               <li>
                 <button 
                   onClick={() => scrollToSection('most-used')} 
-                  className="hover:text-white transition-colors"
+                  className="hover:text-yellow-400 transition-colors"
                 >
                   {t.navMostUsed}
                 </button>
@@ -98,7 +98,7 @@ export const Footer: React.FC<FooterProps> = ({
               <li>
                 <button 
                   onClick={() => scrollToSection('ai-universe')} 
-                  className="hover:text-white transition-colors text-purple-400 hover:text-purple-300 font-semibold"
+                  className="text-yellow-400 hover:text-yellow-300 transition-colors font-black"
                 >
                   {t.navAI}
                 </button>
@@ -106,7 +106,7 @@ export const Footer: React.FC<FooterProps> = ({
               <li>
                 <button 
                   onClick={() => scrollToSection('all-services')} 
-                  className="hover:text-white transition-colors"
+                  className="hover:text-yellow-400 transition-colors"
                 >
                   {t.navServices}
                 </button>
@@ -114,7 +114,7 @@ export const Footer: React.FC<FooterProps> = ({
               <li>
                 <button 
                   onClick={() => scrollToSection('about-google')} 
-                  className="hover:text-white transition-colors"
+                  className="hover:text-yellow-400 transition-colors"
                 >
                   {t.navAbout}
                 </button>
@@ -123,9 +123,9 @@ export const Footer: React.FC<FooterProps> = ({
                 <li>
                   <button 
                     onClick={onOpenPrivacyModal} 
-                    className="hover:text-white transition-colors text-blue-400 hover:underline flex items-center gap-1"
+                    className="text-yellow-400 hover:underline flex items-center gap-1.5 font-bold"
                   >
-                    <Lock className="w-3 h-3" />
+                    <Lock className="w-3.5 h-3.5 text-yellow-400" />
                     {t.privacyTitle}
                   </button>
                 </li>
@@ -134,9 +134,9 @@ export const Footer: React.FC<FooterProps> = ({
                 <li>
                   <button 
                     onClick={onOpenTermsModal} 
-                    className="hover:text-white transition-colors text-blue-400 hover:underline flex items-center gap-1"
+                    className="text-yellow-400 hover:underline flex items-center gap-1.5 font-bold"
                   >
-                    <FileText className="w-3 h-3" />
+                    <FileText className="w-3.5 h-3.5 text-yellow-400" />
                     {t.termsTitle}
                   </button>
                 </li>
@@ -146,10 +146,10 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Col 3: Categories Sitemap */}
           <div>
-            <h4 className="font-bold text-white text-sm mb-4">
+            <h4 className="font-black text-white text-sm mb-4">
               {t.categoriesNav}
             </h4>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-2 text-xs text-slate-400">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-2 text-xs text-neutral-200 font-bold">
               {categories.slice(0, 8).map((cat) => {
                 const catTitle = lang === 'ar' ? cat.titleAr : cat.titleEn;
                 return (
@@ -159,7 +159,7 @@ export const Footer: React.FC<FooterProps> = ({
                         onSelectCategory(cat.id);
                         scrollToSection('all-services');
                       }}
-                      className="hover:text-blue-400 transition-colors text-start line-clamp-1"
+                      className="hover:text-yellow-400 transition-colors text-start line-clamp-1"
                     >
                       {catTitle}
                     </button>
@@ -171,16 +171,16 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Col 4: Designer Information & WhatsApp */}
           <div className="space-y-4">
-            <h4 className="font-bold text-white text-sm">
+            <h4 className="font-black text-white text-sm">
               {t.designerTitle}
             </h4>
 
-            <div className="p-4 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-3">
+            <div className="p-4 rounded-2xl bg-[#0e0e0e] border-2 border-[#262626] space-y-3 shadow-xl">
               <div>
-                <span className="text-[11px] text-slate-400 block mb-0.5">
+                <span className="text-[11px] text-neutral-300 block mb-0.5 font-bold">
                   {lang === 'ar' ? 'تصميم وتطوير:' : 'Designed by:'}
                 </span>
-                <span className="font-bold text-white text-sm sm:text-base block">
+                <span className="font-black text-white text-sm sm:text-base block">
                   {t.designerName}
                 </span>
               </div>
@@ -191,15 +191,15 @@ export const Footer: React.FC<FooterProps> = ({
                 href="https://wa.me/249919980435"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md shadow-emerald-950 transition-all hover:scale-105 w-full justify-center"
+                className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-yellow-400 hover:bg-yellow-300 text-black font-black text-xs shadow-lg shadow-yellow-400/20 transition-all hover:scale-105 w-full justify-center"
               >
-                <MessageCircle className="w-4 h-4 fill-white text-emerald-600" />
+                <MessageCircle className="w-4 h-4 text-black" />
                 <span>WhatsApp: {t.designerWhatsApp}</span>
-                <ExternalLink className="w-3.5 h-3.5 ms-1 opacity-80" />
+                <ExternalLink className="w-3.5 h-3.5 ms-1 text-black" />
               </a>
             </div>
 
-            <p className="text-[11px] text-slate-400 leading-relaxed">
+            <p className="text-[11px] text-neutral-300 leading-relaxed font-medium">
               {t.designerNote}
             </p>
           </div>
@@ -207,26 +207,26 @@ export const Footer: React.FC<FooterProps> = ({
         </div>
 
         {/* Mandatory Independent Platform Disclaimer */}
-        <div className="py-6 border-b border-slate-800 text-xs text-slate-400 leading-relaxed">
+        <div className="py-6 border-b border-[#222222] text-xs text-neutral-200 leading-relaxed font-medium">
           <p className="max-w-5xl">
-            <strong className="text-slate-300">Disclaimer: </strong>
+            <strong className="text-yellow-400 font-bold">Disclaimer: </strong>
             {t.disclaimerText}
           </p>
         </div>
 
         {/* Bottom Bar: Copyright & Back to Top */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-300 font-bold">
           <p>
-            © {new Date().getFullYear()} GServia — {t.allRightsReserved}. {t.craftedWith} <span className="text-white font-semibold">{t.designerName}</span>.
+            © {new Date().getFullYear()} GServia — {t.allRightsReserved}. {t.craftedWith} <span className="text-white font-black">{t.designerName}</span>.
           </p>
 
           <button
             id="back-to-top-btn"
             onClick={scrollToTop}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#111111] hover:bg-yellow-400 hover:text-black text-white text-xs font-black border border-[#333333] transition-colors"
           >
             <span>{t.backToTop}</span>
-            <ArrowUp className="w-4 h-4" />
+            <ArrowUp className="w-4 h-4 text-yellow-400" />
           </button>
         </div>
 

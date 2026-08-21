@@ -40,25 +40,25 @@ export const LanguageSelectModal: React.FC<LanguageSelectModalProps> = ({
   return (
     <div 
       id="language-select-modal-overlay"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div 
         id="language-select-modal-content"
-        className="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white flex flex-col max-h-[85vh]"
+        className="relative w-full max-w-xl bg-[#0a0a0a] rounded-3xl p-6 shadow-2xl border-2 border-[#2a2a2a] text-white flex flex-col max-h-[85vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+        <div className="flex items-center justify-between pb-4 border-b border-[#222222]">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400">
-              <Globe className="w-5 h-5" />
+            <div className="p-2.5 rounded-2xl bg-black border-2 border-yellow-400/40 text-yellow-400">
+              <Globe className="w-5 h-5 text-yellow-400" />
             </div>
             <div>
-              <h3 className="text-lg font-bold">
+              <h3 className="text-lg font-black text-white">
                 {currentLang === 'ar' ? 'اختر لغة العرض (30 لغة)' : 'Choose Language (30 Languages)'}
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-neutral-300 font-medium">
                 {currentLang === 'ar' ? 'تغيير اللغة والاتجاه فورياً' : 'Instant multilingual translation'}
               </p>
             </div>
@@ -66,21 +66,21 @@ export const LanguageSelectModal: React.FC<LanguageSelectModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-2 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-2 rounded-full text-neutral-400 hover:text-white hover:bg-[#1a1a1a] transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5 text-yellow-400" />
           </button>
         </div>
 
         {/* Search inside languages */}
         <div className="my-4 relative">
-          <Search className="w-4 h-4 text-slate-400 absolute start-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-yellow-400 absolute start-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={currentLang === 'ar' ? 'ابحث عن لغة...' : 'Search for a language...'}
-            className="w-full ps-10 pe-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full ps-10 pe-4 py-2.5 rounded-xl bg-black border-2 border-[#262626] text-sm text-white placeholder-neutral-400 focus:outline-none focus:border-yellow-400"
           />
         </div>
 
@@ -93,24 +93,24 @@ export const LanguageSelectModal: React.FC<LanguageSelectModalProps> = ({
                 <button
                   key={langItem.code}
                   onClick={() => handleSelect(langItem.code)}
-                  className={`flex items-center justify-between p-3 rounded-2xl border text-start transition-all ${
+                  className={`flex items-center justify-between p-3 rounded-2xl border-2 text-start transition-all ${
                     isSelected
-                      ? 'bg-blue-50/80 dark:bg-blue-950/40 border-blue-500 text-blue-700 dark:text-blue-300 font-bold shadow-sm'
-                      : 'bg-slate-50/50 dark:bg-slate-800/40 border-slate-200/80 dark:border-slate-700/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200'
+                      ? 'bg-yellow-400 text-black border-yellow-400 font-black shadow-lg shadow-yellow-400/20'
+                      : 'bg-black border-[#222222] hover:border-yellow-400/50 text-white'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
                     <span className="text-xl">{langItem.flag}</span>
                     <div className="flex flex-col">
-                      <span className="text-sm font-semibold">{langItem.nativeName}</span>
-                      <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                      <span className="text-sm font-bold">{langItem.nativeName}</span>
+                      <span className={`text-[11px] font-medium ${isSelected ? 'text-black/80' : 'text-neutral-300'}`}>
                         {langItem.name} {langItem.dir === 'rtl' ? '(RTL)' : ''}
                       </span>
                     </div>
                   </div>
 
                   {isSelected && (
-                    <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center">
+                    <div className="w-6 h-6 rounded-full bg-black text-yellow-400 flex items-center justify-center">
                       <Check className="w-3.5 h-3.5" />
                     </div>
                   )}
@@ -121,10 +121,10 @@ export const LanguageSelectModal: React.FC<LanguageSelectModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+        <div className="mt-4 pt-3 border-t border-[#222222] flex justify-end">
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-sm font-semibold transition-colors"
+            className="px-5 py-2 rounded-xl bg-[#151515] hover:bg-[#252525] text-sm font-bold text-white border border-[#333333] transition-colors"
           >
             {t.close}
           </button>

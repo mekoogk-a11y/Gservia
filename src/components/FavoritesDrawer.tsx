@@ -51,25 +51,25 @@ export const FavoritesDrawer: React.FC<FavoritesDrawerProps> = ({
   return (
     <div 
       id="favorites-drawer-backdrop"
-      className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex justify-end animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex justify-end animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div 
         id="favorites-drawer-panel"
-        className="w-full max-w-md bg-white dark:bg-slate-900 h-full shadow-2xl border-s border-slate-200 dark:border-slate-800 flex flex-col animate-in slide-in-from-end duration-300 text-slate-900 dark:text-white"
+        className="w-full max-w-md bg-[#0a0a0a] h-full shadow-2xl border-s-2 border-[#262626] flex flex-col animate-in slide-in-from-end duration-300 text-white"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+        <div className="p-5 sm:p-6 border-b border-[#222222] flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-500 border border-amber-200 dark:border-amber-800 flex items-center justify-center">
-              <Star className="w-5 h-5 fill-amber-400" />
+            <div className="w-10 h-10 rounded-xl bg-black border-2 border-yellow-400/40 text-yellow-400 flex items-center justify-center">
+              <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
             </div>
             <div>
-              <h3 className="font-extrabold text-slate-900 dark:text-white text-lg">
+              <h3 className="font-black text-white text-lg">
                 {t.favoritesTitle}
               </h3>
-              <span className="text-xs text-slate-500 dark:text-slate-400">
+              <span className="text-xs text-yellow-400 font-bold">
                 {favoriteServices.length} {lang === 'ar' ? 'خدمات محفوظة للوصول السريع' : 'quick launch items'}
               </span>
             </div>
@@ -77,9 +77,9 @@ export const FavoritesDrawer: React.FC<FavoritesDrawerProps> = ({
 
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-2 text-neutral-400 hover:text-white rounded-xl hover:bg-[#1a1a1a] transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5 text-yellow-400" />
           </button>
         </div>
 
@@ -87,13 +87,13 @@ export const FavoritesDrawer: React.FC<FavoritesDrawerProps> = ({
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3">
           {favoriteServices.length === 0 ? (
             <div className="py-16 text-center">
-              <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center mx-auto mb-3">
-                <Star className="w-7 h-7" />
+              <div className="w-14 h-14 rounded-2xl bg-black border-2 border-yellow-400/30 text-yellow-400 flex items-center justify-center mx-auto mb-3">
+                <Star className="w-7 h-7 text-yellow-400" />
               </div>
-              <h4 className="font-bold text-slate-900 dark:text-white text-sm mb-1">
+              <h4 className="font-black text-white text-sm mb-1">
                 {t.favoritesEmptyTitle}
               </h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed">
+              <p className="text-xs text-neutral-300 max-w-xs mx-auto leading-relaxed font-medium">
                 {t.favoritesEmptyDesc}
               </p>
             </div>
@@ -110,26 +110,21 @@ export const FavoritesDrawer: React.FC<FavoritesDrawerProps> = ({
                 <div 
                   key={service.id}
                   onClick={handleOpenDirect}
-                  className="group flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 hover:border-blue-400 dark:hover:border-blue-500 transition-all cursor-pointer hover:shadow-md"
+                  className="group flex items-center justify-between p-3.5 rounded-2xl bg-black border-2 border-[#222222] hover:border-yellow-400 transition-all cursor-pointer hover:shadow-lg shadow-black"
                 >
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <div 
-                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform"
-                      style={{
-                        backgroundColor: `${service.colorHex}15`,
-                        color: service.colorHex,
-                        border: `1px solid ${service.colorHex}25`
-                      }}
+                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-[#0e0e0e] border border-yellow-400/30 group-hover:border-yellow-400 transition-colors"
                     >
-                      <ServiceIcon name={service.iconName} className="w-5 h-5" colorHex={service.colorHex} />
+                      <ServiceIcon name={service.iconName} className="w-5 h-5 text-yellow-400" />
                     </div>
 
                     <div className="min-w-0 pe-2">
-                      <h4 className="font-bold text-slate-900 dark:text-white text-sm truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 flex items-center gap-1">
+                      <h4 className="font-bold text-white text-sm truncate group-hover:text-yellow-400 flex items-center gap-1">
                         <span>{displayName}</span>
-                        <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <ArrowUpRight className="w-3.5 h-3.5 text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                       </h4>
-                      <span className="text-[11px] text-slate-500 dark:text-slate-400 truncate block">
+                      <span className="text-[11px] text-neutral-300 truncate block font-medium">
                         {service.url.replace('https://', '')}
                       </span>
                     </div>
@@ -141,24 +136,24 @@ export const FavoritesDrawer: React.FC<FavoritesDrawerProps> = ({
                         e.stopPropagation();
                         onSelectService(service);
                       }}
-                      className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                      className="p-2 rounded-xl text-neutral-300 hover:text-white hover:bg-[#1a1a1a] transition-colors"
                       title={t.learnMore}
                     >
-                      <Info className="w-4 h-4" />
+                      <Info className="w-4 h-4 text-yellow-400" />
                     </button>
 
                     <a
                       href={service.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-xs"
+                      className="p-2 rounded-xl bg-yellow-400 text-black hover:bg-yellow-300 transition-colors shadow-xs"
                       title={t.openService}
                       onClick={(e) => {
                         e.stopPropagation();
                         if (onTrackRecent) onTrackRecent(service);
                       }}
                     >
-                      <ExternalLink className="w-4 h-4" />
+                      <ExternalLink className="w-4 h-4 text-black" />
                     </a>
 
                     <button
@@ -166,7 +161,7 @@ export const FavoritesDrawer: React.FC<FavoritesDrawerProps> = ({
                         e.stopPropagation();
                         onToggleFavorite(service.id);
                       }}
-                      className="p-2 text-slate-400 hover:text-red-500 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                      className="p-2 text-neutral-400 hover:text-red-400 rounded-xl hover:bg-[#1a1a1a] transition-colors"
                       title={t.removeFromFavorites}
                     >
                       <Trash2 className="w-4 h-4" />
@@ -180,8 +175,8 @@ export const FavoritesDrawer: React.FC<FavoritesDrawerProps> = ({
 
         {/* Footer */}
         {favoriteServices.length > 0 && (
-          <div className="p-4 border-t border-slate-100 dark:border-slate-800 text-center">
-            <span className="text-xs text-slate-400 dark:text-slate-500">
+          <div className="p-4 border-t border-[#222222] text-center bg-black">
+            <span className="text-xs text-yellow-400 font-bold">
               {lang === 'ar' ? 'انقر على أي خدمة للانتقال إليها مباشرة ↗' : 'Click on any service to open directly ↗'}
             </span>
           </div>

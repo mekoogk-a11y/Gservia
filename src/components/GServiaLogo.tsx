@@ -15,7 +15,7 @@ export const GServiaLogo: React.FC<GServiaLogoProps> = ({
 }) => {
   const sizeMap = {
     sm: { icon: 'w-7 h-7', text: 'text-base', sub: 'text-[9px]' },
-    md: { icon: 'w-9 h-9', text: 'text-lg', sub: 'text-[10px]' },
+    md: { icon: 'w-9 h-9', text: 'text-xl', sub: 'text-[11px]' },
     lg: { icon: 'w-12 h-12', text: 'text-2xl', sub: 'text-xs' },
     xl: { icon: 'w-16 h-16', text: 'text-3xl', sub: 'text-sm' },
   };
@@ -24,27 +24,27 @@ export const GServiaLogo: React.FC<GServiaLogoProps> = ({
 
   return (
     <div className={`inline-flex items-center gap-2.5 select-none ${className}`}>
-      {/* Geometric GServia Gateway Emblem */}
+      {/* Stark Black & Yellow Geometric Emblem */}
       <div 
-        className={`${currentSize.icon} relative rounded-xl bg-gradient-to-br from-slate-900 via-slate-800 to-blue-950 p-1 flex items-center justify-center shadow-md shadow-blue-500/10 border border-slate-700/80 group-hover:border-blue-500/50 transition-colors shrink-0`}
+        className={`${currentSize.icon} relative rounded-xl bg-black p-1 flex items-center justify-center shadow-lg shadow-yellow-500/10 border-2 border-yellow-400 group-hover:border-yellow-300 transition-colors shrink-0`}
       >
         <svg viewBox="0 0 48 48" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Subtle Outer Gateway Segment */}
-          <circle cx="24" cy="24" r="20" stroke="rgba(56, 189, 248, 0.2)" strokeWidth="2" strokeDasharray="3 3"/>
-          <path d="M 36 14 A 16 16 0 1 0 40 24 L 24 24 L 24 20 L 41 20 A 18 18 0 1 1 37 11 Z" fill="url(#gserviaGradInner)"/>
-          <circle cx="24" cy="24" r="3.5" fill="#38BDF8"/>
+          {/* Outer Yellow Gateway */}
+          <circle cx="24" cy="24" r="20" stroke="#FACC15" strokeWidth="2.5" strokeDasharray="3 3" opacity="0.4"/>
+          <path d="M 36 14 A 16 16 0 1 0 40 24 L 24 24 L 24 20 L 41 20 A 18 18 0 1 1 37 11 Z" fill="url(#gserviaGradYellow)"/>
+          <circle cx="24" cy="24" r="3.5" fill="#FFFFFF"/>
           
-          {/* 4 Spark Accent Dots */}
-          <circle cx="24" cy="4" r="1.5" fill="#4285F4"/>
-          <circle cx="44" cy="24" r="1.5" fill="#EA4335"/>
-          <circle cx="24" cy="44" r="1.5" fill="#34A853"/>
-          <circle cx="4" cy="24" r="1.5" fill="#FBBC05"/>
+          {/* Spark Accent Dots in Yellow */}
+          <circle cx="24" cy="4" r="2" fill="#FACC15"/>
+          <circle cx="44" cy="24" r="2" fill="#FDE047"/>
+          <circle cx="24" cy="44" r="2" fill="#EAB308"/>
+          <circle cx="4" cy="24" r="2" fill="#CA8A04"/>
 
           <defs>
-            <linearGradient id="gserviaGradInner" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#38BDF8"/>
-              <stop offset="0.5" stopColor="#2563EB"/>
-              <stop offset="1" stopColor="#1D4ED8"/>
+            <linearGradient id="gserviaGradYellow" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#FEF08A"/>
+              <stop offset="0.5" stopColor="#FACC15"/>
+              <stop offset="1" stopColor="#CA8A04"/>
             </linearGradient>
           </defs>
         </svg>
@@ -53,13 +53,13 @@ export const GServiaLogo: React.FC<GServiaLogoProps> = ({
       {showText && (
         <div className="flex flex-col text-start">
           <div className="flex items-center gap-1.5 leading-none">
-            <span className={`font-black tracking-tight ${currentSize.text} text-slate-900 dark:text-white`}>
+            <span className={`font-black tracking-tight ${currentSize.text} text-white`}>
               GServia
             </span>
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+            <span className="inline-block w-2 h-2 rounded-full bg-yellow-400 animate-pulse shadow-sm shadow-yellow-400"></span>
           </div>
           {subtitle && (
-            <span className={`${currentSize.sub} font-medium text-slate-500 dark:text-slate-400 tracking-normal mt-0.5`}>
+            <span className={`${currentSize.sub} font-semibold text-neutral-200 tracking-normal mt-0.5`}>
               {subtitle}
             </span>
           )}

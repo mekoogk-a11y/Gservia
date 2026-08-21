@@ -2,7 +2,7 @@ import React from 'react';
 import { GoogleService, Language } from '../types';
 import { getTranslation } from '../data/translations';
 import { ServiceIcon } from './ServiceIcon';
-import { History, X, ExternalLink, Trash2, ArrowUpRight } from 'lucide-react';
+import { History, X, Trash2, ArrowUpRight } from 'lucide-react';
 
 interface RecentServicesDrawerProps {
   isOpen: boolean;
@@ -19,7 +19,6 @@ export const RecentServicesDrawer: React.FC<RecentServicesDrawerProps> = ({
   recentServices,
   onClearRecent,
   lang,
-  onSelectService,
 }) => {
   const t = getTranslation(lang);
 
@@ -32,23 +31,23 @@ export const RecentServicesDrawer: React.FC<RecentServicesDrawerProps> = ({
   return (
     <div 
       id="recent-services-drawer-overlay"
-      className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm transition-opacity animate-in fade-in"
+      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm transition-opacity animate-in fade-in"
       onClick={onClose}
     >
       <div 
         id="recent-services-drawer"
-        className="fixed inset-y-0 end-0 w-full max-w-md bg-white dark:bg-slate-900 shadow-2xl border-s border-slate-200 dark:border-slate-800 flex flex-col z-50 text-slate-900 dark:text-white transform transition-transform animate-in slide-in-from-end duration-300"
+        className="fixed inset-y-0 end-0 w-full max-w-md bg-[#0a0a0a] shadow-2xl border-s-2 border-[#262626] flex flex-col z-50 text-white transform transition-transform animate-in slide-in-from-end duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+        <div className="p-5 border-b border-[#222222] flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400">
-              <History className="w-5 h-5" />
+            <div className="p-2.5 rounded-2xl bg-black border-2 border-yellow-400/40 text-yellow-400">
+              <History className="w-5 h-5 text-yellow-400" />
             </div>
             <div>
-              <h3 className="font-bold text-lg">{t.recentTitle}</h3>
-              <span className="text-xs text-slate-500 dark:text-slate-400">
+              <h3 className="font-black text-lg text-white">{t.recentTitle}</h3>
+              <span className="text-xs text-yellow-400 font-bold">
                 {recentServices.length} {lang === 'ar' ? 'خدمات تم تصفحها' : 'services opened'}
               </span>
             </div>
@@ -59,16 +58,16 @@ export const RecentServicesDrawer: React.FC<RecentServicesDrawerProps> = ({
               <button
                 onClick={onClearRecent}
                 title={lang === 'ar' ? 'مسح السجل' : 'Clear History'}
-                className="p-2 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                className="p-2 rounded-xl text-neutral-400 hover:text-red-400 hover:bg-[#1a1a1a] transition-colors"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
             )}
             <button
               onClick={onClose}
-              className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="p-2 rounded-xl text-neutral-400 hover:text-white hover:bg-[#1a1a1a] transition-colors"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5 text-yellow-400" />
             </button>
           </div>
         </div>
@@ -77,10 +76,10 @@ export const RecentServicesDrawer: React.FC<RecentServicesDrawerProps> = ({
         <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
           {recentServices.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-3">
-              <div className="w-16 h-16 rounded-3xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
-                <History className="w-8 h-8 opacity-40" />
+              <div className="w-16 h-16 rounded-3xl bg-black border-2 border-yellow-400/30 flex items-center justify-center text-yellow-400">
+                <History className="w-8 h-8 opacity-60 text-yellow-400" />
               </div>
-              <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xs">
+              <p className="text-sm text-neutral-300 max-w-xs font-medium">
                 {t.recentEmpty}
               </p>
             </div>
@@ -89,28 +88,27 @@ export const RecentServicesDrawer: React.FC<RecentServicesDrawerProps> = ({
               <div
                 key={service.id}
                 onClick={() => handleLaunch(service)}
-                className="group flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 hover:bg-blue-50/60 dark:hover:bg-blue-950/40 border border-slate-200/80 dark:border-slate-700/60 transition-all cursor-pointer"
+                className="group flex items-center justify-between p-3.5 rounded-2xl bg-black border-2 border-[#222222] hover:border-yellow-400 transition-all cursor-pointer shadow-black"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div 
-                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm"
-                    style={{ backgroundColor: `${service.colorHex}15`, color: service.colorHex }}
+                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-[#0e0e0e] border border-yellow-400/30"
                   >
-                    <ServiceIcon name={service.iconName} className="w-5 h-5" />
+                    <ServiceIcon name={service.iconName} className="w-5 h-5 text-yellow-400" />
                   </div>
                   <div className="min-w-0">
-                    <h4 className="font-bold text-sm text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <h4 className="font-black text-sm text-white truncate group-hover:text-yellow-400 transition-colors">
                       {lang === 'ar' && service.nameAr ? service.nameAr : service.name}
                     </h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                    <p className="text-xs text-neutral-300 truncate font-medium">
                       {lang === 'ar' ? service.descriptionAr : service.descriptionEn}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-1 shrink-0 ms-2">
-                  <span className="p-2 rounded-xl text-blue-600 dark:text-blue-400 bg-blue-100/50 dark:bg-blue-900/30 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                    <ArrowUpRight className="w-4 h-4" />
+                  <span className="p-2 rounded-xl text-black bg-yellow-400 group-hover:bg-yellow-300 transition-colors shadow-xs">
+                    <ArrowUpRight className="w-4 h-4 text-black" />
                   </span>
                 </div>
               </div>
@@ -119,8 +117,8 @@ export const RecentServicesDrawer: React.FC<RecentServicesDrawerProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-100 dark:border-slate-800 text-center">
-          <span className="text-xs text-slate-400">
+        <div className="p-4 border-t border-[#222222] text-center bg-black">
+          <span className="text-xs text-yellow-400 font-bold">
             {lang === 'ar' ? 'البيانات تُحفظ محلياً في متصفحك فقط' : 'History is saved locally on your device'}
           </span>
         </div>

@@ -17,7 +17,6 @@ import { PrivacyModal } from './components/PrivacyModal';
 import { TermsModal } from './components/TermsModal';
 import { AboutGoogleSection } from './components/AboutGoogleSection';
 import { Footer } from './components/Footer';
-import { Download } from 'lucide-react';
 
 export default function App() {
   // 1. Language state with auto-detection & localStorage persistence
@@ -36,9 +35,9 @@ export default function App() {
     try {
       const saved = localStorage.getItem('gservia_theme') || localStorage.getItem('google_hub_theme');
       if (saved) return saved as Theme;
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      return 'dark';
     } catch {
-      return 'light';
+      return 'dark';
     }
   });
 
@@ -100,7 +99,6 @@ export default function App() {
     } else if (theme === 'light') {
       document.documentElement.classList.remove('dark');
     } else {
-      // System theme
       const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       if (isDark) {
         document.documentElement.classList.add('dark');
@@ -216,7 +214,7 @@ export default function App() {
   const t = getTranslation(lang);
 
   return (
-    <div className="min-h-screen diamond-bg-light diamond-bg-dark diamond-grid-pattern text-slate-900 dark:text-slate-100 flex flex-col selection:bg-blue-500 selection:text-white transition-colors duration-300 relative overflow-x-hidden">
+    <div className="min-h-screen bg-black text-white flex flex-col selection:bg-yellow-400 selection:text-black transition-colors duration-300 relative overflow-x-hidden">
       
       {/* Sticky Navigation Bar */}
       <Navbar
@@ -293,21 +291,21 @@ export default function App() {
           {/* Section Heading */}
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-blue-200/70 dark:border-blue-800/60 text-blue-700 dark:text-blue-300 text-xs font-bold mb-3">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-xl bg-[#111111] border border-yellow-400/40 text-yellow-400 text-xs font-black mb-3">
                 <span>{lang === 'ar' ? 'الدليل الكامل' : 'Full Catalog'}</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+              <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
                 {t.allServicesTitle}
               </h2>
-              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
+              <p className="text-sm sm:text-base text-neutral-200 mt-1 max-w-2xl font-medium">
                 {t.allServicesSubtitle}
               </p>
             </div>
 
             {/* Results Count */}
-            <div className="text-xs font-bold text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <div className="text-xs font-bold text-white bg-[#0e0e0e] px-4 py-2.5 rounded-xl border border-[#2a2a2a] shadow-md">
               <span>{lang === 'ar' ? 'المعروض:' : 'Showing:'} </span>
-              <span className="text-blue-600 dark:text-blue-400 font-extrabold">{filteredServices.length}</span> {lang === 'ar' ? 'من أصل' : 'of'} <span>{GOOGLE_SERVICES.length}</span>
+              <span className="text-yellow-400 font-black">{filteredServices.length}</span> {lang === 'ar' ? 'من أصل' : 'of'} <span className="font-black">{GOOGLE_SERVICES.length}</span>
             </div>
           </div>
 
@@ -362,23 +360,6 @@ export default function App() {
         onOpenPrivacyModal={() => setIsPrivacyModalOpen(true)}
         onOpenTermsModal={() => setIsTermsModalOpen(true)}
       />
-
-      {/* Floating PWA Quick Install Trigger for Mobile / Desktop */}
-      <aside 
-        aria-label="PWA Install Prompt"
-        className="fixed bottom-5 end-5 z-30 animate-in fade-in slide-in-from-bottom-4 duration-300"
-      >
-        <button
-          id="floating-pwa-install-btn"
-          onClick={() => setIsInstallModalOpen(true)}
-          className="group flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs sm:text-sm shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40 transition-all hover:scale-105 border border-white/20"
-        >
-          <div className="p-1 rounded-lg bg-white/20">
-            <Download className="w-4 h-4" />
-          </div>
-          <span className="pe-1">{t.installApp}</span>
-        </button>
-      </aside>
 
       {/* Detail Modal */}
       <ServiceDetailModal

@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Language, Theme } from '../types';
+import { Language, Theme, UserProfile } from '../types';
 import { getTranslation, SUPPORTED_LANGUAGES } from '../data/translations';
 import { GServiaLogo } from './GServiaLogo';
 import { 
-  Sun, 
-  Moon, 
   Menu, 
   X, 
   Search, 
@@ -15,15 +13,27 @@ import {
   Info,
   Download,
   History,
-  ExternalLink,
-  Laptop
+  Cpu,
+  ShoppingBag,
+  Terminal,
+  User,
+  ShieldCheck,
+  Bell,
+  LayoutDashboard,
+  ExternalLink
 } from 'lucide-react';
+
+export type MainViewType = 'services' | 'dashboard' | 'integrations' | 'marketplace' | 'developers' | 'account';
 
 interface NavbarProps {
   lang: Language;
+  currentView: MainViewType;
+  onNavigate: (view: MainViewType) => void;
+  user: UserProfile | null;
+  onOpenAuthModal: () => void;
+  unreadNotificationsCount: number;
+  onOpenNotifications: () => void;
   onOpenLangModal: () => void;
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
   favoritesCount: number;
   onOpenFavorites: () => void;
   recentCount: number;
@@ -36,17 +46,19 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({
   lang,
+  currentView,
+  onNavigate,
+  user,
+  onOpenAuthModal,
+  unreadNotificationsCount,
+  onOpenNotifications,
   onOpenLangModal,
-  theme,
-  setTheme,
   favoritesCount,
   onOpenFavorites,
   recentCount,
   onOpenRecent,
   onFocusSearch,
   onOpenInstallModal,
-  onOpenPrivacyModal,
-  onOpenTermsModal,
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -62,27 +74,11 @@ export const Navbar: React.FC<NavbarProps> = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const cycleTheme = () => {
-    if (theme === 'light') {
-      setTheme('dark');
-    } else if (theme === 'dark') {
-      setTheme('system');
-    } else {
-      setTheme('light');
-    }
-  };
-
-  const scrollToSection = (id: string) => {
+  const handleNavClick = (view: MainViewType) => {
     setMobileMenuOpen(false);
-    const element = document.getElementById(id);
-    if (element) {
-      const navHeight = 80;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - navHeight;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth',
-      });
+    onNavigate(view);
+    if (view === 'services') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -92,67 +88,101 @@ export const Navbar: React.FC<NavbarProps> = ({
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
         isScrolled 
           ? 'bg-black/95 backdrop-blur-xl shadow-xl shadow-black/80 border-b border-[#262626] py-2.5' 
-          : 'bg-black/80 backdrop-blur-md py-3.5 border-b border-[#1a1a1a]'
+          : 'bg-black/85 backdrop-blur-md py-3 border-b border-[#1a1a1a]'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           
           {/* GServia Brand Logo */}
-          <a 
-            href="#hero" 
-            onClick={(e) => { e.preventDefault(); scrollToSection('hero'); }}
-            className="flex items-center group focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded-xl p-1"
+          <button 
+            onClick={() => handleNavClick('services')}
+            className="flex items-center group focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded-xl p-1 text-start shrink-0"
             id="nav-logo-btn"
             aria-label="GServia Home"
           >
             <GServiaLogo size="md" subtitle={t.brandTagline} />
-          </a>
+          </button>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+          <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5">
+            
+            {/* 1. Services / Catalog */}
             <button
-              id="nav-link-home"
-              onClick={() => scrollToSection('hero')}
-              className="px-3.5 py-2 text-sm font-bold rounded-xl text-white hover:text-yellow-400 hover:bg-[#151515] transition-colors"
+              id="nav-link-services"
+              onClick={() => handleNavClick('services')}
+              className={`px-3 py-1.5 text-xs font-black rounded-xl transition-all ${
+                currentView === 'services'
+                  ? 'bg-yellow-400 text-black shadow-md shadow-yellow-400/20'
+                  : 'text-white hover:text-yellow-400 hover:bg-[#151515]'
+              }`}
             >
-              {t.navHome}
+              {lang === 'ar' ? 'دليل الخدمات' : 'Services Catalog'}
             </button>
+
+            {/* 2. Dashboard */}
             <button
-              id="nav-link-most-used"
-              onClick={() => scrollToSection('most-used')}
-              className="px-3.5 py-2 text-sm font-bold rounded-xl text-white hover:text-yellow-400 hover:bg-[#151515] transition-colors"
+              id="nav-link-dashboard"
+              onClick={() => handleNavClick('dashboard')}
+              className={`px-3 py-1.5 text-xs font-black rounded-xl transition-all flex items-center gap-1.5 ${
+                currentView === 'dashboard'
+                  ? 'bg-yellow-400 text-black shadow-md shadow-yellow-400/20'
+                  : 'text-white hover:text-yellow-400 hover:bg-[#151515]'
+              }`}
             >
-              {t.navMostUsed}
+              <LayoutDashboard className="w-3.5 h-3.5" />
+              <span>{t.navDashboard}</span>
             </button>
+
+            {/* 3. Multi-Ecosystem Integrations */}
             <button
-              id="nav-link-ai"
-              onClick={() => scrollToSection('ai-universe')}
-              className="px-3.5 py-2 text-sm font-bold rounded-xl text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10 transition-colors flex items-center gap-1.5 border border-yellow-400/30"
+              id="nav-link-integrations"
+              onClick={() => handleNavClick('integrations')}
+              className={`px-3 py-1.5 text-xs font-black rounded-xl transition-all flex items-center gap-1.5 ${
+                currentView === 'integrations'
+                  ? 'bg-yellow-400 text-black shadow-md shadow-yellow-400/20'
+                  : 'text-white hover:text-yellow-400 hover:bg-[#151515]'
+              }`}
             >
-              <Sparkles className="w-4 h-4 text-yellow-400 animate-pulse" />
-              {t.navAI}
+              <Cpu className="w-3.5 h-3.5" />
+              <span>{t.navIntegrations}</span>
             </button>
+
+            {/* 4. Marketplace */}
             <button
-              id="nav-link-all-services"
-              onClick={() => scrollToSection('all-services')}
-              className="px-3.5 py-2 text-sm font-bold rounded-xl text-white hover:text-yellow-400 hover:bg-[#151515] transition-colors"
+              id="nav-link-marketplace"
+              onClick={() => handleNavClick('marketplace')}
+              className={`px-3 py-1.5 text-xs font-black rounded-xl transition-all flex items-center gap-1.5 ${
+                currentView === 'marketplace'
+                  ? 'bg-yellow-400 text-black shadow-md shadow-yellow-400/20'
+                  : 'text-white hover:text-yellow-400 hover:bg-[#151515]'
+              }`}
             >
-              {t.navServices}
+              <ShoppingBag className="w-3.5 h-3.5" />
+              <span>{t.navMarketplace}</span>
             </button>
+
+            {/* 5. Developer Platform */}
             <button
-              id="nav-link-about"
-              onClick={() => scrollToSection('about-google')}
-              className="px-3.5 py-2 text-sm font-bold rounded-xl text-white hover:text-yellow-400 hover:bg-[#151515] transition-colors"
+              id="nav-link-developers"
+              onClick={() => handleNavClick('developers')}
+              className={`px-3 py-1.5 text-xs font-black rounded-xl transition-all flex items-center gap-1.5 ${
+                currentView === 'developers'
+                  ? 'bg-yellow-400 text-black shadow-md shadow-yellow-400/20'
+                  : 'text-white hover:text-yellow-400 hover:bg-[#151515]'
+              }`}
             >
-              {t.navAbout}
+              <Terminal className="w-3.5 h-3.5" />
+              <span>{t.navDevelopers}</span>
             </button>
+
+            {/* 6. PWA Install Trigger */}
             <button
               id="nav-link-install"
               onClick={onOpenInstallModal}
-              className="px-3.5 py-2 text-sm font-bold rounded-xl text-neutral-200 hover:text-yellow-400 hover:bg-[#151515] transition-colors flex items-center gap-1.5"
+              className="px-2.5 py-1.5 text-xs font-bold rounded-xl text-neutral-300 hover:text-yellow-400 hover:bg-[#151515] transition-colors flex items-center gap-1"
             >
-              <Download className="w-3.5 h-3.5 text-yellow-400" />
+              <Download className="w-3 h-3 text-yellow-400" />
               <span>{t.installApp}</span>
             </button>
           </nav>
@@ -160,16 +190,19 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Right Action Tools */}
           <div className="flex items-center gap-1.5 sm:gap-2">
             
-            {/* Quick Search Button */}
+            {/* Quick Search Button (only on catalog view or global trigger) */}
             <button
               id="nav-search-trigger"
-              onClick={onFocusSearch}
+              onClick={() => {
+                if (currentView !== 'services') handleNavClick('services');
+                setTimeout(() => onFocusSearch(), 100);
+              }}
               title={t.searchPlaceholder}
               aria-label={t.searchPlaceholder}
-              className="p-2.5 rounded-xl text-white bg-[#111111] hover:bg-[#222222] border border-[#333333] transition-colors flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="p-2 rounded-xl text-white bg-[#111] hover:bg-[#222] border border-[#333] transition-colors flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-yellow-400"
             >
               <Search className="w-4 h-4 text-yellow-400" />
-              <span className="hidden md:inline text-xs font-bold text-yellow-400 bg-black px-1.5 py-0.5 rounded border border-[#333333]">
+              <span className="hidden md:inline text-[10px] font-bold text-yellow-400 bg-black px-1.5 py-0.5 rounded border border-[#333]">
                 /
               </span>
             </button>
@@ -180,11 +213,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={onOpenRecent}
               title={t.recentTitle}
               aria-label={t.recentTitle}
-              className="relative p-2.5 rounded-xl text-white bg-[#111111] hover:bg-[#222222] border border-[#333333] transition-colors"
+              className="relative p-2 rounded-xl text-white bg-[#111] hover:bg-[#222] border border-[#333] transition-colors"
             >
               <History className="w-4 h-4 text-yellow-400" />
               {recentCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-yellow-400 text-black text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-yellow-400 text-black text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">
                   {recentCount}
                 </span>
               )}
@@ -196,12 +229,28 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={onOpenFavorites}
               title={t.navFavorites}
               aria-label={t.navFavorites}
-              className="relative p-2.5 rounded-xl text-white bg-[#111111] hover:bg-[#222222] border border-[#333333] transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="relative p-2 rounded-xl text-white bg-[#111] hover:bg-[#222] border border-[#333] transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-400"
             >
               <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
               {favoritesCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-yellow-400 text-black text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center animate-pulse">
+                <span className="absolute -top-1 -right-1 bg-yellow-400 text-black text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center animate-pulse">
                   {favoritesCount}
+                </span>
+              )}
+            </button>
+
+            {/* Notifications Bell */}
+            <button
+              id="nav-notifications-trigger"
+              onClick={onOpenNotifications}
+              title="Platform Notifications"
+              aria-label="Platform Notifications"
+              className="relative p-2 rounded-xl text-white bg-[#111] hover:bg-[#222] border border-[#333] transition-colors"
+            >
+              <Bell className="w-4 h-4 text-yellow-400" />
+              {unreadNotificationsCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-yellow-400 text-black text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">
+                  {unreadNotificationsCount}
                 </span>
               )}
             </button>
@@ -212,18 +261,47 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={onOpenLangModal}
               title="Change Language (30 Languages)"
               aria-label="Change Language"
-              className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-white bg-[#111111] hover:bg-[#222222] transition-colors flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-yellow-400 border border-[#333333]"
+              className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-white bg-[#111] hover:bg-[#222] transition-colors flex items-center gap-1.5 border border-[#333]"
             >
               <span className="text-sm">{currentLangMeta.flag}</span>
-              <span className="hidden sm:inline font-bold text-white">{currentLangMeta.nativeName}</span>
+              <span className="hidden sm:inline font-bold text-white text-xs">{currentLangMeta.nativeName}</span>
             </button>
+
+            {/* User Account / Sign In Trigger */}
+            {user ? (
+              <button
+                id="nav-user-account-btn"
+                onClick={() => handleNavClick('account')}
+                title={user.fullName}
+                className={`p-1.5 rounded-xl border transition-all flex items-center gap-1.5 ${
+                  currentView === 'account'
+                    ? 'border-yellow-400 bg-yellow-400/20'
+                    : 'border-[#333] bg-[#111] hover:border-yellow-400/50'
+                }`}
+              >
+                <div className="w-7 h-7 rounded-lg bg-yellow-400 text-black font-black text-xs flex items-center justify-center">
+                  {user.fullName.charAt(0).toUpperCase()}
+                </div>
+                <span className="hidden xl:inline text-xs font-bold text-white max-w-[100px] truncate">
+                  {user.fullName.split(' ')[0]}
+                </span>
+              </button>
+            ) : (
+              <button
+                id="nav-auth-login-btn"
+                onClick={onOpenAuthModal}
+                className="px-3 py-1.5 rounded-xl bg-yellow-400 hover:bg-yellow-300 text-black text-xs font-black transition-colors shadow-sm"
+              >
+                {lang === 'ar' ? 'دخول' : 'Sign In'}
+              </button>
+            )}
 
             {/* Mobile Hamburger Menu Toggle */}
             <button
               id="nav-mobile-menu-toggle"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle Mobile Navigation"
-              className="lg:hidden p-2.5 rounded-xl text-white bg-[#111111] hover:bg-[#222222] border border-[#333333] transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="lg:hidden p-2 rounded-xl text-white bg-[#111] hover:bg-[#222] border border-[#333] transition-colors"
             >
               {mobileMenuOpen ? <X className="w-5 h-5 text-yellow-400" /> : <Menu className="w-5 h-5 text-yellow-400" />}
             </button>
@@ -236,62 +314,74 @@ export const Navbar: React.FC<NavbarProps> = ({
         {mobileMenuOpen && (
           <div 
             id="mobile-nav-menu"
-            className="lg:hidden mt-3 pt-3 pb-4 px-3 bg-black rounded-2xl shadow-2xl border-2 border-[#333333] space-y-1.5 animate-in fade-in slide-in-from-top-2 duration-200"
+            className="lg:hidden mt-3 pt-3 pb-4 px-3 bg-black rounded-2xl shadow-2xl border-2 border-[#333] space-y-1 animate-in fade-in slide-in-from-top-2 duration-200"
           >
             <button
-              onClick={() => scrollToSection('hero')}
-              className="w-full text-start px-4 py-2.5 text-sm font-bold rounded-xl text-white hover:text-yellow-400 hover:bg-[#151515] flex items-center gap-2.5"
+              onClick={() => handleNavClick('services')}
+              className={`w-full text-start px-4 py-2 text-xs font-black rounded-xl flex items-center gap-2.5 ${currentView === 'services' ? 'bg-yellow-400 text-black' : 'text-white hover:bg-[#151515]'}`}
             >
               <Layers className="w-4 h-4 text-yellow-400" />
-              {t.navHome}
+              {lang === 'ar' ? 'دليل الخدمات الشامل' : 'Services Catalog'}
             </button>
+
             <button
-              onClick={() => scrollToSection('most-used')}
-              className="w-full text-start px-4 py-2.5 text-sm font-bold rounded-xl text-white hover:text-yellow-400 hover:bg-[#151515] flex items-center gap-2.5"
+              onClick={() => handleNavClick('dashboard')}
+              className={`w-full text-start px-4 py-2 text-xs font-black rounded-xl flex items-center gap-2.5 ${currentView === 'dashboard' ? 'bg-yellow-400 text-black' : 'text-white hover:bg-[#151515]'}`}
             >
-              <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-              {t.navMostUsed}
+              <LayoutDashboard className="w-4 h-4 text-yellow-400" />
+              {t.navDashboard}
             </button>
+
             <button
-              onClick={() => scrollToSection('ai-universe')}
-              className="w-full text-start px-4 py-2.5 text-sm font-bold rounded-xl text-yellow-400 hover:bg-yellow-400/10 flex items-center gap-2.5"
+              onClick={() => handleNavClick('integrations')}
+              className={`w-full text-start px-4 py-2 text-xs font-black rounded-xl flex items-center gap-2.5 ${currentView === 'integrations' ? 'bg-yellow-400 text-black' : 'text-white hover:bg-[#151515]'}`}
             >
-              <Sparkles className="w-4 h-4 text-yellow-400" />
-              {t.navAI}
+              <Cpu className="w-4 h-4 text-yellow-400" />
+              {t.navIntegrations}
             </button>
+
             <button
-              onClick={() => scrollToSection('all-services')}
-              className="w-full text-start px-4 py-2.5 text-sm font-bold rounded-xl text-white hover:text-yellow-400 hover:bg-[#151515] flex items-center gap-2.5"
+              onClick={() => handleNavClick('marketplace')}
+              className={`w-full text-start px-4 py-2 text-xs font-black rounded-xl flex items-center gap-2.5 ${currentView === 'marketplace' ? 'bg-yellow-400 text-black' : 'text-white hover:bg-[#151515]'}`}
             >
-              <Briefcase className="w-4 h-4 text-yellow-400" />
-              {t.navServices}
+              <ShoppingBag className="w-4 h-4 text-yellow-400" />
+              {t.navMarketplace}
             </button>
+
             <button
-              onClick={() => scrollToSection('about-google')}
-              className="w-full text-start px-4 py-2.5 text-sm font-bold rounded-xl text-white hover:text-yellow-400 hover:bg-[#151515] flex items-center gap-2.5"
+              onClick={() => handleNavClick('developers')}
+              className={`w-full text-start px-4 py-2 text-xs font-black rounded-xl flex items-center gap-2.5 ${currentView === 'developers' ? 'bg-yellow-400 text-black' : 'text-white hover:bg-[#151515]'}`}
             >
-              <Info className="w-4 h-4 text-yellow-400" />
-              {t.navAbout}
+              <Terminal className="w-4 h-4 text-yellow-400" />
+              {t.navDevelopers}
+            </button>
+
+            <button
+              onClick={() => handleNavClick('account')}
+              className={`w-full text-start px-4 py-2 text-xs font-black rounded-xl flex items-center gap-2.5 ${currentView === 'account' ? 'bg-yellow-400 text-black' : 'text-white hover:bg-[#151515]'}`}
+            >
+              <User className="w-4 h-4 text-yellow-400" />
+              {t.navAccount}
             </button>
 
             {/* Mobile PWA Install trigger */}
             <button
               onClick={() => { setMobileMenuOpen(false); onOpenInstallModal(); }}
-              className="w-full text-start px-4 py-3 text-sm font-black rounded-xl text-black bg-yellow-400 hover:bg-yellow-300 flex items-center gap-2.5 shadow-lg shadow-yellow-400/20"
+              className="w-full text-start px-4 py-2.5 text-xs font-black rounded-xl text-black bg-yellow-400 hover:bg-yellow-300 flex items-center gap-2 shadow-lg shadow-yellow-400/20 mt-2"
             >
               <Download className="w-4 h-4 text-black" />
               {t.installApp}
             </button>
             
-            <div className="pt-3 border-t border-[#262626] flex items-center justify-between px-3">
-              <span className="text-xs text-white font-semibold">
-                {lang === 'ar' ? 'المطور: كمال جعفر زكريا' : 'Designed by Kamal Gafar Zakaria'}
+            <div className="pt-3 border-t border-[#262626] flex items-center justify-between px-2">
+              <span className="text-[11px] text-white font-semibold">
+                {lang === 'ar' ? 'المطور: كمال جعفر زكريا' : 'Kamal Gafar Zakaria'}
               </span>
               <a 
                 href="https://wa.me/249919980435"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs font-black text-yellow-400 flex items-center gap-1 hover:underline"
+                className="text-[11px] font-black text-yellow-400 flex items-center gap-1 hover:underline"
               >
                 00249919980435
                 <ExternalLink className="w-3 h-3 text-yellow-400" />

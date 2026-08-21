@@ -36,7 +36,6 @@ import { DeveloperPlatformView } from './components/DeveloperPlatformView';
 import { AccountSecurityView } from './components/AccountSecurityView';
 import { AuthModal } from './components/AuthModal';
 import { NotificationsModal } from './components/NotificationsModal';
-import { SudanesePromoAudioPlayer } from './components/SudanesePromoAudioPlayer';
 
 export default function App() {
   // 1. Navigation View State
@@ -548,9 +547,6 @@ export default function App() {
         )}
 
       </main>
-
-      {/* Floating Sudanese Arabic Promo Audio Player */}
-      <SudanesePromoAudioPlayer lang={lang} />
 
       {/* Footer */}
       <Footer

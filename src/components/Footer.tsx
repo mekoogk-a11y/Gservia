@@ -1,6 +1,6 @@
 import React from 'react';
 import { Language, ServiceCategory } from '../types';
-import { getTranslation } from '../data/translations';
+import { getTranslation, SUPPORTED_LANGUAGES } from '../data/translations';
 import { GServiaLogo } from './GServiaLogo';
 import { 
   ArrowUp, 
@@ -8,7 +8,10 @@ import {
   ExternalLink, 
   ShieldCheck,
   Lock,
-  FileText
+  FileText,
+  Globe,
+  Building2,
+  CheckCircle2
 } from 'lucide-react';
 
 interface FooterProps {
@@ -17,6 +20,8 @@ interface FooterProps {
   onSelectCategory: (categoryId: string) => void;
   onOpenPrivacyModal?: () => void;
   onOpenTermsModal?: () => void;
+  onSelectLanguage?: (lang: Language) => void;
+  onOpenLangModal?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -25,6 +30,8 @@ export const Footer: React.FC<FooterProps> = ({
   onSelectCategory,
   onOpenPrivacyModal,
   onOpenTermsModal,
+  onSelectLanguage,
+  onOpenLangModal,
 }) => {
   const t = getTranslation(lang);
 
@@ -48,10 +55,55 @@ export const Footer: React.FC<FooterProps> = ({
     }
   };
 
+  const quickFooterLanguages = SUPPORTED_LANGUAGES.slice(0, 10);
+
   return (
     <footer id="footer" className="bg-black text-white pt-16 pb-12 border-t-2 border-[#222222]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
+        {/* Enterprise Credentials Badge Banner */}
+        <div className="mb-12 p-4 rounded-2xl bg-[#0a0a0a] border-2 border-[#222] grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <div className="flex flex-col items-center justify-center p-2">
+            <span className="text-xs font-black text-yellow-400 uppercase tracking-wider flex items-center gap-1 mb-1">
+              <ShieldCheck className="w-4 h-4 text-yellow-400" />
+              {lang === 'ar' ? 'معايير الأمان المؤسسي' : 'Enterprise Security'}
+            </span>
+            <span className="text-[11px] text-neutral-300 font-bold">
+              {lang === 'ar' ? 'بروتوكول Zero-Trust & PKCE' : 'Zero-Trust & PKCE Architecture'}
+            </span>
+          </div>
+
+          <div className="flex flex-col items-center justify-center p-2">
+            <span className="text-xs font-black text-yellow-400 uppercase tracking-wider flex items-center gap-1 mb-1">
+              <Lock className="w-4 h-4 text-yellow-400" />
+              {lang === 'ar' ? 'الخصوصية التامة' : 'Zero Data Retention'}
+            </span>
+            <span className="text-[11px] text-neutral-300 font-bold">
+              {lang === 'ar' ? 'لا يتم حفظ أي كلمات مرور' : 'No Credential Storage'}
+            </span>
+          </div>
+
+          <div className="flex flex-col items-center justify-center p-2">
+            <span className="text-xs font-black text-yellow-400 uppercase tracking-wider flex items-center gap-1 mb-1">
+              <Globe className="w-4 h-4 text-yellow-400" />
+              {lang === 'ar' ? 'تغطية عالمية' : 'Global Localization'}
+            </span>
+            <span className="text-[11px] text-neutral-300 font-bold">
+              {lang === 'ar' ? 'العربية (الرسمية) + 29 لغة' : 'Arabic (Official) + 29 Languages'}
+            </span>
+          </div>
+
+          <div className="flex flex-col items-center justify-center p-2">
+            <span className="text-xs font-black text-yellow-400 uppercase tracking-wider flex items-center gap-1 mb-1">
+              <Building2 className="w-4 h-4 text-yellow-400" />
+              {lang === 'ar' ? 'جاهز للشركات الكبرى' : 'Fortune 500 Ready'}
+            </span>
+            <span className="text-[11px] text-neutral-300 font-bold">
+              {lang === 'ar' ? 'سرعة فائقة و 99.99% توفر' : 'Ultra-Low Latency & 99.99% SLA'}
+            </span>
+          </div>
+        </div>
+
         {/* Main Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-[#222222]">
           
@@ -63,13 +115,13 @@ export const Footer: React.FC<FooterProps> = ({
 
             <p className="text-xs text-neutral-200 leading-relaxed font-medium">
               {lang === 'ar' 
-                ? 'GServia هي بوابتك العالمية المستقلة لاكتشاف وتنظيم والوصول المباشر إلى خدمات Google الرسمية بسرعة وأمان.'
-                : 'GServia is your independent global gateway to discover, organize, and directly access official Google services with speed and security.'}
+                ? 'GServia هي المنظومة السحابية العالمية الموحدة لاكتشاف وتنظيم والوصول المباشر إلى 50+ خدمة رسمية وأدوات الذكاء الاصطناعي المؤسسي.'
+                : 'GServia is the unified global cloud ecosystem to discover, organize, and directly access 50+ official services and enterprise AI tools.'}
             </p>
 
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#111111] border border-[#333333] text-white text-xs font-bold">
               <ShieldCheck className="w-4 h-4 text-yellow-400" />
-              <span>{lang === 'ar' ? 'منصة مستقلة وآمنة 100%' : '100% Secure Independent Platform'}</span>
+              <span>{lang === 'ar' ? 'منصة مستقلة وموثقة رسمياً' : 'Officially Verified Independent Hub'}</span>
             </div>
           </div>
 
@@ -178,7 +230,7 @@ export const Footer: React.FC<FooterProps> = ({
             <div className="p-4 rounded-2xl bg-[#0e0e0e] border-2 border-[#262626] space-y-3 shadow-xl">
               <div>
                 <span className="text-[11px] text-neutral-300 block mb-0.5 font-bold">
-                  {lang === 'ar' ? 'تصميم وتطوير:' : 'Designed by:'}
+                  {lang === 'ar' ? 'تصميم وهندسة وتطوير:' : 'Designed & Engineered by:'}
                 </span>
                 <span className="font-black text-white text-sm sm:text-base block">
                   {t.designerName}
@@ -204,6 +256,45 @@ export const Footer: React.FC<FooterProps> = ({
             </p>
           </div>
 
+        </div>
+
+        {/* Global Languages Quick Footer Strip */}
+        <div className="py-6 border-b border-[#222222] flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <Globe className="w-4 h-4 text-yellow-400" />
+            <span className="text-xs font-black text-white">
+              {lang === 'ar' ? 'اللغات السريعة:' : 'Quick Languages:'}
+            </span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            {quickFooterLanguages.map((item) => {
+              const isSelected = lang === item.code;
+              return (
+                <button
+                  key={item.code}
+                  onClick={() => onSelectLanguage && onSelectLanguage(item.code)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all border ${
+                    isSelected
+                      ? 'bg-yellow-400 text-black border-yellow-400 font-black shadow-sm'
+                      : 'bg-[#111] text-neutral-300 border-[#2b2b2b] hover:border-yellow-400 hover:text-white'
+                  }`}
+                >
+                  <span className="me-1">{item.flag}</span>
+                  <span>{item.nativeName}</span>
+                </button>
+              );
+            })}
+
+            {onOpenLangModal && (
+              <button
+                onClick={onOpenLangModal}
+                className="px-3 py-1 rounded-lg text-xs font-black text-yellow-400 bg-[#161616] hover:bg-[#252525] border border-yellow-400/40 transition-colors"
+              >
+                {lang === 'ar' ? 'عرض كافة اللغات (30) ←' : 'View All 30 Languages →'}
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Mandatory Independent Platform Disclaimer */}

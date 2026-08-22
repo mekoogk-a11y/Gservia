@@ -36,6 +36,11 @@ export interface LanguageMeta {
   nativeName: string;
   dir: 'rtl' | 'ltr';
   flag: string;
+  region?: 'official' | 'mena_asia' | 'europe_americas' | 'africa';
+  isOfficialPrimary?: boolean;
+  isOfficialSecondary?: boolean;
+  badgeAr?: string;
+  badgeEn?: string;
 }
 
 export type Theme = 'light' | 'dark' | 'system';

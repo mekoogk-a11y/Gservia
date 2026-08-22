@@ -11,16 +11,19 @@ import {
   Sparkles, 
   Briefcase, 
   Info,
-  Download,
-  History,
-  Cpu,
-  ShoppingBag,
-  Terminal,
-  User,
-  ShieldCheck,
-  Bell,
-  LayoutDashboard,
-  ExternalLink
+  Download, 
+  History, 
+  Cpu, 
+  ShoppingBag, 
+  Terminal, 
+  User, 
+  ShieldCheck, 
+  Bell, 
+  LayoutDashboard, 
+  ExternalLink,
+  Globe,
+  CheckCircle2,
+  Building2
 } from 'lucide-react';
 
 export type MainViewType = 'services' | 'dashboard' | 'integrations' | 'marketplace' | 'developers' | 'account';
@@ -34,6 +37,7 @@ interface NavbarProps {
   unreadNotificationsCount: number;
   onOpenNotifications: () => void;
   onOpenLangModal: () => void;
+  onChangeLang?: (lang: Language) => void;
   favoritesCount: number;
   onOpenFavorites: () => void;
   recentCount: number;
@@ -53,6 +57,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   unreadNotificationsCount,
   onOpenNotifications,
   onOpenLangModal,
+  onChangeLang,
   favoritesCount,
   onOpenFavorites,
   recentCount,
@@ -82,15 +87,61 @@ export const Navbar: React.FC<NavbarProps> = ({
     }
   };
 
+  const handleToggleOfficialLang = (targetLang: 'ar' | 'en') => {
+    if (onChangeLang) {
+      onChangeLang(targetLang);
+    }
+  };
+
   return (
     <header 
       id="main-navbar"
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
         isScrolled 
-          ? 'bg-black/95 backdrop-blur-xl shadow-xl shadow-black/80 border-b border-[#262626] py-2.5' 
-          : 'bg-black/85 backdrop-blur-md py-3 border-b border-[#1a1a1a]'
+          ? 'bg-black/95 backdrop-blur-xl shadow-xl shadow-black/80 border-b border-[#2b2b2b] py-2' 
+          : 'bg-black/90 backdrop-blur-md py-2.5 border-b border-[#1f1f1f]'
       }`}
     >
+      {/* Micro Enterprise Status Strip */}
+      <div className="hidden md:block max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-1.5">
+        <div className="flex items-center justify-between text-[10px] text-neutral-400 font-bold border-b border-[#1c1c1c] pb-1">
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center gap-1 text-yellow-400 font-black">
+              <ShieldCheck className="w-3 h-3 text-yellow-400" />
+              {lang === 'ar' ? 'بوابة مؤسسية عالمية معتمدة' : 'Enterprise Verified Cloud Gateway'}
+            </span>
+            <span className="text-[#333]">•</span>
+            <span className="text-neutral-300">
+              {lang === 'ar' ? 'معايير أمان Zero-Trust' : 'Zero-Trust Architecture'}
+            </span>
+            <span className="text-[#333]">•</span>
+            <span className="text-neutral-300">
+              {lang === 'ar' ? '50+ خدمة رسمية موثقة' : '50+ Official Direct Endpoints'}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-neutral-400">
+              {lang === 'ar' ? 'اللغات الرسمية:' : 'Official Languages:'}
+            </span>
+            <span className={`px-1.5 py-0.2 rounded font-black ${lang === 'ar' ? 'bg-yellow-400 text-black' : 'text-neutral-300'}`}>
+              العربية (رسمية)
+            </span>
+            <span className="text-[#444]">|</span>
+            <span className={`px-1.5 py-0.2 rounded font-black ${lang === 'en' ? 'bg-yellow-400 text-black' : 'text-neutral-300'}`}>
+              English (Official)
+            </span>
+            <span className="text-[#444]">|</span>
+            <button 
+              onClick={onOpenLangModal}
+              className="text-yellow-400 hover:underline font-bold"
+            >
+              {lang === 'ar' ? '30 لغة عالمية' : '30 World Languages'}
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-2">
           
@@ -190,7 +241,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Right Action Tools */}
           <div className="flex items-center gap-1.5 sm:gap-2">
             
-            {/* Quick Search Button (only on catalog view or global trigger) */}
+            {/* Quick Search Button */}
             <button
               id="nav-search-trigger"
               onClick={() => {
@@ -255,16 +306,48 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </button>
 
-            {/* 30 Languages Modal Trigger */}
+            {/* FAST BILINGUAL SWITCHER (Arabic / English) */}
+            <div className="hidden sm:flex items-center bg-[#111] p-0.5 rounded-xl border border-[#333]">
+              <button
+                onClick={() => handleToggleOfficialLang('ar')}
+                className={`px-2.5 py-1 text-xs font-black rounded-lg transition-all ${
+                  lang === 'ar'
+                    ? 'bg-yellow-400 text-black shadow-sm'
+                    : 'text-neutral-300 hover:text-white'
+                }`}
+                title="اللغة الرسمية الأولى (العربية)"
+              >
+                العربية
+              </button>
+              <button
+                onClick={() => handleToggleOfficialLang('en')}
+                className={`px-2.5 py-1 text-xs font-black rounded-lg transition-all ${
+                  lang === 'en'
+                    ? 'bg-yellow-400 text-black shadow-sm'
+                    : 'text-neutral-300 hover:text-white'
+                }`}
+                title="Official Secondary Language (English)"
+              >
+                EN
+              </button>
+            </div>
+
+            {/* 30 Languages Global Selector Modal Trigger */}
             <button
               id="nav-lang-toggle"
               onClick={onOpenLangModal}
-              title="Change Language (30 Languages)"
+              title={lang === 'ar' ? 'تغيير اللغة (30 لغة عالمية)' : 'Change Language (30 Global Languages)'}
               aria-label="Change Language"
-              className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-white bg-[#111] hover:bg-[#222] transition-colors flex items-center gap-1.5 border border-[#333]"
+              className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-white bg-[#111] hover:bg-[#222] hover:border-yellow-400/60 transition-colors flex items-center gap-1.5 border border-[#333]"
             >
+              <Globe className="w-3.5 h-3.5 text-yellow-400" />
               <span className="text-sm">{currentLangMeta.flag}</span>
-              <span className="hidden sm:inline font-bold text-white text-xs">{currentLangMeta.nativeName}</span>
+              <span className="hidden xl:inline font-bold text-white text-xs">
+                {currentLangMeta.nativeName}
+              </span>
+              <span className="text-[10px] bg-black px-1.5 py-0.2 rounded border border-[#333] text-yellow-400 font-mono">
+                30
+              </span>
             </button>
 
             {/* User Account / Sign In Trigger */}
@@ -316,6 +399,33 @@ export const Navbar: React.FC<NavbarProps> = ({
             id="mobile-nav-menu"
             className="lg:hidden mt-3 pt-3 pb-4 px-3 bg-black rounded-2xl shadow-2xl border-2 border-[#333] space-y-1 animate-in fade-in slide-in-from-top-2 duration-200"
           >
+            {/* Mobile Bilingual Quick Switcher */}
+            <div className="flex items-center justify-between p-2 rounded-xl bg-[#111] border border-[#2a2a2a] mb-2">
+              <span className="text-xs font-bold text-neutral-300">
+                {lang === 'ar' ? 'اللغة الرسمية:' : 'Official Language:'}
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => { handleToggleOfficialLang('ar'); setMobileMenuOpen(false); }}
+                  className={`px-3 py-1 text-xs font-black rounded-lg ${lang === 'ar' ? 'bg-yellow-400 text-black' : 'text-white bg-black'}`}
+                >
+                  العربية
+                </button>
+                <button
+                  onClick={() => { handleToggleOfficialLang('en'); setMobileMenuOpen(false); }}
+                  className={`px-3 py-1 text-xs font-black rounded-lg ${lang === 'en' ? 'bg-yellow-400 text-black' : 'text-white bg-black'}`}
+                >
+                  English
+                </button>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); onOpenLangModal(); }}
+                  className="px-2 py-1 text-xs font-bold text-yellow-400 bg-black border border-[#333] rounded-lg"
+                >
+                  🌐 30
+                </button>
+              </div>
+            </div>
+
             <button
               onClick={() => handleNavClick('services')}
               className={`w-full text-start px-4 py-2 text-xs font-black rounded-xl flex items-center gap-2.5 ${currentView === 'services' ? 'bg-yellow-400 text-black' : 'text-white hover:bg-[#151515]'}`}

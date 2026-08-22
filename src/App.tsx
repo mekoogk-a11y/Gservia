@@ -368,6 +368,7 @@ export default function App() {
         unreadNotificationsCount={unreadNotificationsCount}
         onOpenNotifications={() => setIsNotificationsModalOpen(true)}
         onOpenLangModal={() => setIsLangModalOpen(true)}
+        onChangeLang={(newLang) => setLang(newLang)}
         favoritesCount={favorites.length}
         onOpenFavorites={() => setIsFavoritesDrawerOpen(true)}
         recentCount={recentServiceIds.length}
@@ -559,6 +560,8 @@ export default function App() {
         }}
         onOpenPrivacyModal={() => setIsPrivacyModalOpen(true)}
         onOpenTermsModal={() => setIsTermsModalOpen(true)}
+        onSelectLanguage={(code) => setLang(code)}
+        onOpenLangModal={() => setIsLangModalOpen(true)}
       />
 
       {/* Detail Modal */}

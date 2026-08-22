@@ -24,42 +24,52 @@ export const GServiaLogo: React.FC<GServiaLogoProps> = ({
 
   return (
     <div className={`inline-flex items-center gap-2.5 select-none ${className}`}>
-      {/* Stark Black & Yellow Geometric Emblem */}
+      {/* Distinctive Independent G-Portal Emblem */}
       <div 
-        className={`${currentSize.icon} relative rounded-xl bg-black p-1 flex items-center justify-center shadow-lg shadow-yellow-500/10 border-2 border-yellow-400 group-hover:border-yellow-300 transition-colors shrink-0`}
+        className={`${currentSize.icon} relative rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-cyan-500 p-0.5 flex items-center justify-center shadow-md shadow-blue-500/20 shrink-0 transition-transform duration-200 hover:scale-105`}
       >
-        <svg viewBox="0 0 48 48" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Outer Yellow Gateway */}
-          <circle cx="24" cy="24" r="20" stroke="#FACC15" strokeWidth="2.5" strokeDasharray="3 3" opacity="0.4"/>
-          <path d="M 36 14 A 16 16 0 1 0 40 24 L 24 24 L 24 20 L 41 20 A 18 18 0 1 1 37 11 Z" fill="url(#gserviaGradYellow)"/>
-          <circle cx="24" cy="24" r="3.5" fill="#FFFFFF"/>
-          
-          {/* Spark Accent Dots in Yellow */}
-          <circle cx="24" cy="4" r="2" fill="#FACC15"/>
-          <circle cx="44" cy="24" r="2" fill="#FDE047"/>
-          <circle cx="24" cy="44" r="2" fill="#EAB308"/>
-          <circle cx="4" cy="24" r="2" fill="#CA8A04"/>
+        <div className="w-full h-full rounded-[10px] bg-slate-900 flex items-center justify-center p-1.5">
+          <svg viewBox="0 0 48 48" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Outer Geometric Orbit */}
+            <circle cx="24" cy="24" r="20" stroke="url(#gserviaOrbit)" strokeWidth="2.5" strokeDasharray="3 3" opacity="0.6"/>
+            {/* Distinctive 'G' Gateway Monogram */}
+            <path 
+              d="M 36 14 A 16 16 0 1 0 40 24 L 24 24 L 24 20 L 41 20 A 18 18 0 1 1 37 11 Z" 
+              fill="url(#gserviaGradMain)"
+            />
+            <circle cx="24" cy="24" r="3.5" fill="#FFFFFF"/>
+            
+            {/* Orbiting Satellite Points */}
+            <circle cx="24" cy="4" r="2" fill="#60A5FA"/>
+            <circle cx="44" cy="24" r="2" fill="#818CF8"/>
+            <circle cx="24" cy="44" r="2" fill="#34D399"/>
+            <circle cx="4" cy="24" r="2" fill="#38BDF8"/>
 
-          <defs>
-            <linearGradient id="gserviaGradYellow" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#FEF08A"/>
-              <stop offset="0.5" stopColor="#FACC15"/>
-              <stop offset="1" stopColor="#CA8A04"/>
-            </linearGradient>
-          </defs>
-        </svg>
+            <defs>
+              <linearGradient id="gserviaGradMain" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#60A5FA"/>
+                <stop offset="0.5" stopColor="#3B82F6"/>
+                <stop offset="1" stopColor="#6366F1"/>
+              </linearGradient>
+              <linearGradient id="gserviaOrbit" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#38BDF8"/>
+                <stop offset="1" stopColor="#818CF8"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
       </div>
 
       {showText && (
         <div className="flex flex-col text-start">
           <div className="flex items-center gap-1.5 leading-none">
-            <span className={`font-black tracking-tight ${currentSize.text} text-white`}>
+            <span className={`font-extrabold tracking-tight ${currentSize.text} text-slate-900 dark:text-white`}>
               GServia
             </span>
-            <span className="inline-block w-2 h-2 rounded-full bg-yellow-400 animate-pulse shadow-sm shadow-yellow-400"></span>
+            <span className="inline-block w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse shadow-xs shadow-blue-500"></span>
           </div>
           {subtitle && (
-            <span className={`${currentSize.sub} font-semibold text-neutral-200 tracking-normal mt-0.5`}>
+            <span className={`${currentSize.sub} font-semibold text-slate-500 dark:text-slate-400 tracking-normal mt-0.5`}>
               {subtitle}
             </span>
           )}
@@ -68,3 +78,4 @@ export const GServiaLogo: React.FC<GServiaLogoProps> = ({
     </div>
   );
 };
+

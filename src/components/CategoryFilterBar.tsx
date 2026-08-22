@@ -29,19 +29,19 @@ export const CategoryFilterBar: React.FC<CategoryFilterBarProps> = ({
         <button
           id="category-tab-all"
           onClick={() => onSelectCategory('all')}
-          className={`shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all duration-200 border-2 ${
+          className={`shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 border ${
             selectedCategory === 'all'
-              ? 'bg-yellow-400 text-black border-yellow-400 shadow-lg shadow-yellow-400/20'
-              : 'bg-[#0e0e0e] text-white border-[#262626] hover:border-yellow-400/50 hover:text-yellow-300'
+              ? 'bg-blue-600 text-white border-blue-600 shadow-sm shadow-blue-500/20'
+              : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-800 hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400'
           }`}
         >
-          <Layers className={`w-4 h-4 ${selectedCategory === 'all' ? 'text-black' : 'text-yellow-400'}`} />
+          <Layers className={`w-4 h-4 ${selectedCategory === 'all' ? 'text-white' : 'text-blue-600 dark:text-blue-400'}`} />
           <span>{lang === 'ar' ? 'جميع التصنيفات' : 'All Categories'}</span>
           <span 
-            className={`px-1.5 py-0.5 rounded-md text-[11px] font-black ${
+            className={`px-1.5 py-0.5 rounded-md text-[11px] font-bold ${
               selectedCategory === 'all' 
-                ? 'bg-black text-yellow-400' 
-                : 'bg-black text-white border border-[#333333]'
+                ? 'bg-blue-700/80 text-white' 
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
             }`}
           >
             {totalServicesCount}
@@ -59,19 +59,19 @@ export const CategoryFilterBar: React.FC<CategoryFilterBarProps> = ({
               key={category.id}
               id={`category-tab-${category.id}`}
               onClick={() => onSelectCategory(category.id)}
-              className={`shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 border-2 ${
+              className={`shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 border ${
                 isSelected
-                  ? 'bg-yellow-400 text-black border-yellow-400 shadow-lg shadow-yellow-400/20'
-                  : 'bg-[#0e0e0e] text-white border-[#262626] hover:border-yellow-400/50 hover:text-yellow-300'
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-sm shadow-blue-500/20'
+                  : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-800 hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400'
               }`}
             >
-              <ServiceIcon name={category.iconName} className={`w-4 h-4 ${isSelected ? '!text-black' : 'text-yellow-400'}`} />
+              <ServiceIcon name={category.iconName} className={`w-4 h-4 ${isSelected ? '!text-white' : 'text-blue-600 dark:text-blue-400'}`} />
               <span>{title}</span>
               <span 
-                className={`px-1.5 py-0.5 rounded-md text-[11px] font-black ${
+                className={`px-1.5 py-0.5 rounded-md text-[11px] font-bold ${
                   isSelected 
-                    ? 'bg-black text-yellow-400' 
-                    : 'bg-black text-white border border-[#333333]'
+                    ? 'bg-blue-700/80 text-white' 
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
                 }`}
               >
                 {count}
@@ -84,3 +84,4 @@ export const CategoryFilterBar: React.FC<CategoryFilterBarProps> = ({
     </div>
   );
 };
+

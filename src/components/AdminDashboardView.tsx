@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { GlobalService, Language, ServiceSubmission, BusinessClaim } from '../types';
 import { GLOBAL_SERVICES, GLOBAL_CATEGORIES } from '../data/servicesData';
+import { TrendInsights } from './TrendInsights';
 import { 
   ShieldCheck, 
   Layers, 
@@ -14,7 +15,8 @@ import {
   Users, 
   TrendingUp,
   Search,
-  ExternalLink
+  ExternalLink,
+  Flame
 } from 'lucide-react';
 
 interface AdminDashboardViewProps {
@@ -23,7 +25,7 @@ interface AdminDashboardViewProps {
 
 export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({ lang }) => {
   const isArabic = lang === 'ar';
-  const [activeTab, setActiveTab] = useState<'services' | 'submissions' | 'claims' | 'analytics'>('services');
+  const [activeTab, setActiveTab] = useState<'trends' | 'services' | 'submissions' | 'claims'>('trends');
   const [servicesList, setServicesList] = useState<GlobalService[]>(GLOBAL_SERVICES);
   const [search, setSearch] = useState('');
 
@@ -118,8 +120,9 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({ lang }) 
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex items-center gap-1.5 p-1 bg-slate-950 rounded-2xl border border-slate-800 self-start sm:self-auto">
+        <div className="flex items-center gap-1.5 p-1 bg-slate-950 rounded-2xl border border-slate-800 self-start sm:self-auto overflow-x-auto">
           {[
+            { id: 'trends', en: 'Trend Insights 🔥', ar: 'رادار الرواج والاهتمام 🔥' },
             { id: 'services', en: 'Services (11)', ar: 'الخدمات (11)' },
             { id: 'submissions', en: 'Submissions (2)', ar: 'الطلبات الجديدة (2)' },
             { id: 'claims', en: 'Vendor Claims (2)', ar: 'توثيق الشركات (2)' },
@@ -127,7 +130,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({ lang }) 
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors whitespace-nowrap ${
                 activeTab === tab.id
                   ? 'bg-blue-600 text-white shadow-sm'
                   : 'text-slate-400 hover:text-white'
@@ -138,6 +141,11 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({ lang }) 
           ))}
         </div>
       </div>
+
+      {/* TAB 0: Trend Insights with Recharts */}
+      {activeTab === 'trends' && (
+        <TrendInsights lang={lang} />
+      )}
 
       {/* TAB 1: Services Directory Manager */}
       {activeTab === 'services' && (

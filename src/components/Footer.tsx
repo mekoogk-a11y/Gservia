@@ -229,7 +229,7 @@ export const Footer: React.FC<FooterProps> = ({
             <div className="p-4 rounded-2xl bg-slate-800/80 dark:bg-slate-900 border border-slate-700/80 dark:border-slate-800 space-y-3 shadow-sm">
               <div>
                 <span className="text-[11px] text-slate-400 block mb-0.5 font-medium">
-                  {lang === 'ar' ? 'تصميم وهندسة وتطوير:' : 'Designed & Engineered by:'}
+                  {lang === 'ar' ? 'تصميم وبرمجة:' : 'Designed & Developed by:'}
                 </span>
                 <span className="font-bold text-white text-sm sm:text-base block">
                   {t.designerName}

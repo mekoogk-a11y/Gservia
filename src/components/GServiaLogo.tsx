@@ -64,7 +64,7 @@ export const GServiaLogo: React.FC<GServiaLogoProps> = ({
         <div className="flex flex-col text-start">
           <div className="flex items-center gap-1.5 leading-none">
             <span className={`font-extrabold tracking-tight ${currentSize.text} text-slate-900 dark:text-white`}>
-              GServia
+              Gservia
             </span>
             <span className="inline-block w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse shadow-xs shadow-blue-500"></span>
           </div>

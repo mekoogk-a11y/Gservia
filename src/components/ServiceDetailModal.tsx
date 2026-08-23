@@ -1,25 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleService, Language } from '../types';
-import { getTranslation } from '../data/translations';
-import { ServiceIcon } from './ServiceIcon';
+import { GlobalService, Language } from '../types';
 import { 
   X, 
   ExternalLink, 
   CheckCircle2, 
-  Check, 
+  XCircle,
   Star, 
-  DollarSign, 
   ShieldCheck,
-  Share2
+  Share2,
+  Bookmark,
+  Sparkles,
+  ArrowRight,
+  Layers
 } from 'lucide-react';
 
 interface ServiceDetailModalProps {
-  service: GoogleService | null;
+  service: GlobalService | null;
   onClose: () => void;
   lang: Language;
   isFavorite: boolean;
   onToggleFavorite: (serviceId: string) => void;
-  onTrackRecent?: (service: GoogleService) => void;
+  onTrackRecent?: (service: GlobalService) => void;
+  onSelectAlternative?: (altId: string) => void;
 }
 
 export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
@@ -29,9 +31,10 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
   isFavorite,
   onToggleFavorite,
   onTrackRecent,
+  onSelectAlternative,
 }) => {
   const [copied, setCopied] = useState(false);
-  const t = getTranslation(lang);
+  const isArabic = lang === 'ar';
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -45,27 +48,29 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
 
   if (!service) return null;
 
-  const displayName = lang === 'ar' && service.nameAr ? service.nameAr : service.name;
-  const secondaryName = lang === 'ar' && service.nameAr ? service.name : undefined;
-  const description = lang === 'ar' ? service.detailedInfoAr : service.detailedInfoEn;
-  const features = lang === 'ar' ? service.featuresAr : service.featuresEn;
-  const pricing = lang === 'ar' ? service.pricingAr : service.pricingEn;
+  const displayName = isArabic && service.nameAr ? service.nameAr : service.name;
+  const description = isArabic ? service.descriptionAr : service.description;
+  const features = isArabic ? (service.featuresAr || service.features) : service.features;
+  const pros = isArabic ? (service.prosAr || service.pros) : service.pros;
+  const cons = isArabic ? (service.consAr || service.cons) : service.cons;
+  const howToStart = isArabic ? (service.howToStartAr || service.howToStart) : service.howToStart;
+  const bestFor = isArabic ? service.bestForAr : service.bestFor;
 
   const handleShare = async () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `${displayName} - Gservia`,
-          text: lang === 'ar' ? service.descriptionAr : service.descriptionEn,
-          url: service.url,
+          title: `${displayName} - Gservia Intelligence`,
+          text: description,
+          url: service.websiteUrl,
         });
         return;
       } catch (err) {
-        // User cancelled or share failed, fallback to copy
+        // Fallback to clipboard
       }
     }
 
-    navigator.clipboard.writeText(service.url);
+    navigator.clipboard.writeText(service.websiteUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -77,176 +82,247 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
   return (
     <div 
       id="service-detail-modal-backdrop"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div 
         id="service-detail-modal-card"
-        className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200 text-slate-900 dark:text-white"
+        className="relative w-full max-w-2xl bg-slate-900 rounded-3xl shadow-2xl border border-slate-700/80 overflow-hidden max-h-[92vh] flex flex-col animate-in zoom-in-95 duration-200 text-white text-start"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="p-6 sm:p-7 border-b border-slate-100 dark:border-slate-800 flex items-start justify-between gap-4">
-          <div className="flex items-start gap-4">
-            
-            {/* Service Icon */}
-            <div 
-              className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 shadow-xs"
-            >
-              <ServiceIcon name={service.iconName} className="w-7 h-7 text-blue-600 dark:text-blue-400" />
-            </div>
+        <div className="p-5 sm:p-6 border-b border-slate-800 bg-slate-950/70 flex items-start justify-between gap-4">
+          <div className="flex items-start gap-3.5">
+            <img 
+              src={service.logoUrl} 
+              alt={service.name} 
+              className="w-14 h-14 rounded-2xl object-contain bg-white p-1.5 shadow-md shrink-0" 
+            />
 
             <div>
               <div className="flex flex-wrap items-center gap-2 mb-1">
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                  {t.verifiedService}
-                </span>
-                {service.releaseYear && (
-                  <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
-                    {t.releaseYear} {service.releaseYear}
+                <h3 className="text-lg sm:text-xl font-black text-white">
+                  {displayName}
+                </h3>
+                {service.verified && (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-800/80">
+                    <ShieldCheck className="w-3 h-3" />
+                    {isArabic ? 'خدمة معتمدة' : 'Verified'}
+                  </span>
+                )}
+                {service.freePlan && (
+                  <span className="text-[10px] font-bold text-blue-300 bg-blue-950/80 px-2 py-0.5 rounded-full border border-blue-800">
+                    {isArabic ? 'خطة مجانية متاحة' : 'Free Tier'}
                   </span>
                 )}
               </div>
 
-              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
-                {displayName}
-              </h2>
-              {secondaryName && (
-                <span className="text-xs font-medium text-slate-500 dark:text-slate-400 block mt-0.5">
-                  {secondaryName}
-                </span>
-              )}
+              <p className="text-xs text-slate-400">
+                {service.stackRole || service.categoryId} • {service.websiteUrl.replace('https://', '')}
+              </p>
             </div>
-
           </div>
 
-          {/* Close Button */}
-          <button
-            id="modal-close-btn"
-            onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
-            title="Close"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => onToggleFavorite(service.id)}
+              className={`p-2 rounded-xl border transition-colors ${
+                isFavorite 
+                  ? 'bg-amber-500/20 text-amber-400 border-amber-500/40' 
+                  : 'bg-slate-800 text-slate-400 hover:text-white border-slate-700'
+              }`}
+              title={isFavorite ? 'Remove favorite' : 'Add favorite'}
+            >
+              <Bookmark className="w-4 h-4 fill-current" />
+            </button>
+
+            <button
+              onClick={handleShare}
+              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white border border-slate-700 transition-colors"
+              title="Share"
+            >
+              <Share2 className="w-4 h-4" />
+            </button>
+
+            <button
+              onClick={onClose}
+              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
-        {/* Modal Body */}
-        <div className="p-6 sm:p-7 space-y-6 overflow-y-auto">
+        {/* Modal Scrollable Body */}
+        <div className="p-5 sm:p-6 overflow-y-auto space-y-5 flex-1 text-sm text-slate-200">
           
-          {/* Detailed Overview Paragraph */}
+          {/* Main Description */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-2">
-              {lang === 'ar' ? 'نبذة عن الخدمة' : 'Service Overview'}
+            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">
+              {isArabic ? 'عن الخدمة ودورها:' : 'About Service:'}
             </h4>
-            <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm sm:text-base font-normal">
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
               {description}
             </p>
           </div>
 
-          {/* Key Features List */}
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-3">
-              {t.features}
-            </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {features.map((feat, idx) => (
-                <div 
-                  key={idx} 
-                  className="flex items-start gap-2.5 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 text-xs sm:text-sm text-slate-700 dark:text-slate-200 font-medium"
-                >
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span>{feat}</span>
-                </div>
-              ))}
+          {/* Best For Callout */}
+          {bestFor && (
+            <div className="p-3.5 rounded-2xl bg-blue-950/40 border border-blue-500/30 text-xs">
+              <strong className="text-blue-400 block mb-1">
+                {isArabic ? '🎯 الأنسب لمن ولأي مهمة؟' : '🎯 Best Suited For:'}
+              </strong>
+              <span>{bestFor}</span>
+            </div>
+          )}
+
+          {/* Pricing & Ratings Stats Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+            <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+              <span className="text-[10px] text-slate-400 block mb-0.5">{isArabic ? 'نموذج السعر' : 'Pricing Model'}</span>
+              <span className="font-bold text-white uppercase">{service.pricingType}</span>
+            </div>
+            <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+              <span className="text-[10px] text-slate-400 block mb-0.5">{isArabic ? 'سعر البداية' : 'Starts At'}</span>
+              <span className="font-bold text-white">
+                {service.startingPrice === 0 ? (isArabic ? 'مجاني للبدء' : '$0 / Free') : `$${service.startingPrice}/mo`}
+              </span>
+            </div>
+            <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+              <span className="text-[10px] text-slate-400 block mb-0.5">{isArabic ? 'التقييم العام' : 'User Rating'}</span>
+              <span className="font-bold text-amber-400 flex items-center justify-center gap-1">
+                <Star className="w-3 h-3 fill-amber-400" />
+                {service.rating} ({service.reviewCount})
+              </span>
+            </div>
+            <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+              <span className="text-[10px] text-slate-400 block mb-0.5">{isArabic ? 'دعم العربية' : 'Arabic Support'}</span>
+              <span className="font-bold text-white">
+                {service.languages.includes('ar') ? '🇸🇦 كامل' : '🌐 إنجليزية'}
+              </span>
             </div>
           </div>
 
-          {/* Meta Information Cards: Pricing & Platforms */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-            
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
-              <span className="text-xs font-medium text-slate-500 dark:text-slate-400 block mb-1">
-                {t.pricing}
-              </span>
-              <span className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                <DollarSign className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                {pricing}
-              </span>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
-              <span className="text-xs font-medium text-slate-500 dark:text-slate-400 block mb-1">
-                {t.supportedPlatforms}
-              </span>
-              <div className="flex flex-wrap items-center gap-1.5">
-                {service.platforms.map((p, idx) => (
-                  <span key={idx} className="px-2 py-0.5 rounded-md bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-[11px] font-bold uppercase border border-slate-200 dark:border-slate-600">
-                    {p}
-                  </span>
+          {/* Key Features */}
+          {features && features.length > 0 && (
+            <div>
+              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">
+                {isArabic ? 'أبرز الميزات والإمكانيات:' : 'Key Features:'}
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {features.map((feat, idx) => (
+                  <div key={idx} className="flex items-start gap-2 p-2 rounded-xl bg-slate-950/80 border border-slate-800/80 text-xs">
+                    <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+                    <span>{feat}</span>
+                  </div>
                 ))}
               </div>
             </div>
+          )}
 
+          {/* Pros & Cons (مزايا وعيوب) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Pros */}
+            <div className="p-3 rounded-2xl bg-emerald-950/30 border border-emerald-500/30">
+              <h5 className="text-xs font-bold text-emerald-400 mb-2 flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>{isArabic ? 'أبرز الإيجابيات والمزايا:' : 'Pros & Advantages:'}</span>
+              </h5>
+              <ul className="space-y-1.5 text-xs text-slate-300">
+                {pros.map((p, i) => (
+                  <li key={i} className="flex items-start gap-1.5">
+                    <span className="text-emerald-400 font-bold">•</span>
+                    <span>{p}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Cons */}
+            <div className="p-3 rounded-2xl bg-rose-950/30 border border-rose-500/30">
+              <h5 className="text-xs font-bold text-rose-400 mb-2 flex items-center gap-1.5">
+                <XCircle className="w-3.5 h-3.5" />
+                <span>{isArabic ? 'نقاط الضعف والقيود:' : 'Cons & Trade-offs:'}</span>
+              </h5>
+              <ul className="space-y-1.5 text-xs text-slate-300">
+                {cons.map((c, i) => (
+                  <li key={i} className="flex items-start gap-1.5">
+                    <span className="text-rose-400 font-bold">•</span>
+                    <span>{c}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
-          {/* Safe Link Security Notice */}
-          <div className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 flex items-center gap-3 text-xs text-emerald-800 dark:text-emerald-200">
-            <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-            <span className="font-medium">
-              {lang === 'ar' 
-                ? 'رابط رسمي مباشر وآمن 100% يقودك مباشرة إلى موقع أو تطبيق Google الرسمي.' 
-                : '100% secure official direct URL redirecting straight to official Google servers.'}
-            </span>
-          </div>
+          {/* How to Start Step by Step */}
+          {howToStart && howToStart.length > 0 && (
+            <div>
+              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">
+                {isArabic ? 'كيف تبدأ استخدام الخدمة خطوة بخطوة:' : 'How to get started step-by-step:'}
+              </h4>
+              <div className="space-y-1.5">
+                {howToStart.map((step, idx) => (
+                  <div key={idx} className="flex items-start gap-2 p-2 rounded-xl bg-slate-950 border border-slate-800 text-xs">
+                    <span className="w-5 h-5 rounded-full bg-blue-900/60 text-blue-400 font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">
+                      {idx + 1}
+                    </span>
+                    <span className="text-slate-300">{step}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Alternatives */}
+          {service.alternatives && service.alternatives.length > 0 && (
+            <div>
+              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">
+                {isArabic ? 'بدائل أخرى مقترحة لنفس الغرض:' : 'Suggested Alternatives:'}
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {service.alternatives.map((alt, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      if (onSelectAlternative) onSelectAlternative(alt);
+                    }}
+                    className="px-3 py-1.5 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-xs font-semibold text-slate-300 hover:text-white transition-colors capitalize flex items-center gap-1.5"
+                  >
+                    <Layers className="w-3.5 h-3.5 text-blue-400" />
+                    <span>{alt}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
         </div>
 
-        {/* Modal Footer Actions */}
-        <div className="p-5 sm:p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex flex-wrap items-center justify-between gap-3">
-          
-          <div className="flex items-center gap-2">
-            
-            {/* Share / Copy Link Button */}
-            <button
-              onClick={handleShare}
-              className="px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-750 transition-colors flex items-center gap-1.5"
-            >
-              {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4 text-slate-500 dark:text-slate-400" />}
-              <span>{copied ? t.copiedUrl : t.shareService}</span>
-            </button>
-
-            {/* Favorite Button */}
-            <button
-              onClick={() => onToggleFavorite(service.id)}
-              className={`px-3.5 py-2.5 rounded-xl text-xs font-semibold border transition-colors flex items-center gap-1.5 ${
-                isFavorite
-                  ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-300 border-amber-200 dark:border-amber-800'
-                  : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-750'
-              }`}
-            >
-              <Star className={`w-4 h-4 ${isFavorite ? 'fill-amber-400 text-amber-500' : 'text-slate-400'}`} />
-              <span>{isFavorite ? t.removeFromFavorites : t.addToFavorites}</span>
-            </button>
-
+        {/* Modal Footer / Official Action Link */}
+        <div className="p-4 sm:p-5 border-t border-slate-800 bg-slate-950 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="text-[11px] text-slate-500 text-start">
+            <span className="font-semibold text-slate-400 block">
+              {isArabic ? 'إخلاء مسؤولية الشفافية:' : 'Transparency Note:'}
+            </span>
+            {isArabic ? 'Gservia دليل رقمي مستقل يرشدك للموقع الرسمي المباشر.' : 'Gservia is an independent discovery platform pointing to verified official sites.'}
           </div>
 
-          {/* Launch Official Link */}
-          <a
-            href={service.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={handleDirectLaunch}
-            className="px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-sm shadow-blue-500/20 transition-all hover:scale-105 flex items-center gap-2"
-          >
-            <span>{t.directAccess}</span>
-            <ExternalLink className="w-4 h-4" />
-          </a>
-
+          <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+            <a
+              href={service.websiteUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={handleDirectLaunch}
+              className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-sm transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2"
+            >
+              <span>{isArabic ? 'زيارة الموقع الرسمي للخدمة' : 'Visit Official Service'}</span>
+              <ExternalLink className="w-4 h-4" />
+            </a>
+          </div>
         </div>
 
       </div>
     </div>
   );
 };
-

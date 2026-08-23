@@ -2,16 +2,19 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Language, 
   Theme, 
-  GoogleService, 
+  GlobalService, 
   UserProfile, 
   IntegrationModule, 
   UserSession, 
   SecurityAuditLog, 
   PlatformNotification 
 } from './types';
-import { CATEGORIES, GOOGLE_SERVICES } from './data/servicesData';
+import { GLOBAL_CATEGORIES, GLOBAL_SERVICES } from './data/servicesData';
 import { INTEGRATION_MODULES } from './data/integrationsData';
 import { getTranslation, detectDeviceLanguage, RTL_LANGUAGES } from './data/translations';
+import { parseSmartIntent } from './services/intelligenceEngine';
+
+// Layout & Core Views
 import { Navbar, MainViewType } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
 import { MostUsedSection } from './components/MostUsedSection';
@@ -28,7 +31,16 @@ import { TermsModal } from './components/TermsModal';
 import { AboutGoogleSection } from './components/AboutGoogleSection';
 import { Footer } from './components/Footer';
 
-// New Modular Platform Views & Modals
+// Gservia SaaS Modals & Intelligence Views
+import { GserviaAdvisorModal } from './components/GserviaAdvisorModal';
+import { ComparisonStudioModal } from './components/ComparisonStudioModal';
+import { SubmitServiceModal } from './components/SubmitServiceModal';
+import { SaaSPricingModal } from './components/SaaSPricingModal';
+import { CategoriesExplorerView } from './components/CategoriesExplorerView';
+import { AdminDashboardView } from './components/AdminDashboardView';
+import { SudanesePromoAudioPlayer } from './components/SudanesePromoAudioPlayer';
+
+// Enterprise Multi-Ecosystem Views
 import { DashboardView } from './components/DashboardView';
 import { IntegrationsView } from './components/IntegrationsView';
 import { MarketplaceView } from './components/MarketplaceView';
@@ -81,7 +93,7 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   // 5. Modals and Drawers states
-  const [selectedServiceModal, setSelectedServiceModal] = useState<GoogleService | null>(null);
+  const [selectedServiceModal, setSelectedServiceModal] = useState<GlobalService | null>(null);
   const [isFavoritesDrawerOpen, setIsFavoritesDrawerOpen] = useState<boolean>(false);
   const [isRecentDrawerOpen, setIsRecentDrawerOpen] = useState<boolean>(false);
   const [isLangModalOpen, setIsLangModalOpen] = useState<boolean>(false);
@@ -91,6 +103,13 @@ export default function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [isNotificationsModalOpen, setIsNotificationsModalOpen] = useState<boolean>(false);
   const [isAndroidPublishModalOpen, setIsAndroidPublishModalOpen] = useState<boolean>(false);
+
+  // Gservia SaaS Intelligence Modals
+  const [isAdvisorModalOpen, setIsAdvisorModalOpen] = useState<boolean>(false);
+  const [isComparisonModalOpen, setIsComparisonModalOpen] = useState<boolean>(false);
+  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState<boolean>(false);
+  const [isPricingModalOpen, setIsPricingModalOpen] = useState<boolean>(false);
+  const [preselectedComparison, setPreselectedComparison] = useState<{ s1?: GlobalService; s2?: GlobalService }>({});
 
   // Close all open modals helper for hardware back button
   const handleCloseAllModals = () => {
@@ -104,6 +123,10 @@ export default function App() {
     setIsAuthModalOpen(false);
     setIsNotificationsModalOpen(false);
     setIsAndroidPublishModalOpen(false);
+    setIsAdvisorModalOpen(false);
+    setIsComparisonModalOpen(false);
+    setIsSubmitModalOpen(false);
+    setIsPricingModalOpen(false);
   };
 
   const hasAnyModalOpen = Boolean(
@@ -116,7 +139,11 @@ export default function App() {
     isTermsModalOpen ||
     isAuthModalOpen ||
     isNotificationsModalOpen ||
-    isAndroidPublishModalOpen
+    isAndroidPublishModalOpen ||
+    isAdvisorModalOpen ||
+    isComparisonModalOpen ||
+    isSubmitModalOpen ||
+    isPricingModalOpen
   );
 
   // Hardware/Browser Back Button Handling for Android
@@ -131,9 +158,9 @@ export default function App() {
   const [favorites, setFavorites] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem('gservia_favorites') || localStorage.getItem('google_hub_favorites');
-      return saved ? JSON.parse(saved) : ['gmail', 'google-search', 'gemini', 'google-drive', 'youtube', 'google-maps'];
+      return saved ? JSON.parse(saved) : ['salla', 'shopify', 'chatgpt', 'stripe', 'canva', 'cursor'];
     } catch {
-      return ['gmail', 'google-search', 'gemini', 'google-drive', 'youtube', 'google-maps'];
+      return ['salla', 'shopify', 'chatgpt', 'stripe', 'canva', 'cursor'];
     }
   });
 
@@ -141,9 +168,9 @@ export default function App() {
   const [recentServiceIds, setRecentServiceIds] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem('gservia_recents') || localStorage.getItem('google_hub_recents');
-      return saved ? JSON.parse(saved) : ['gemini', 'google-search', 'google-drive'];
+      return saved ? JSON.parse(saved) : ['salla', 'shopify', 'claude'];
     } catch {
-      return ['gemini', 'google-search', 'google-drive'];
+      return ['salla', 'shopify', 'claude'];
     }
   });
 
@@ -153,14 +180,14 @@ export default function App() {
   // 9. User profile state
   const [user, setUser] = useState<UserProfile>(() => ({
     id: 'usr_gsv_001',
-    email: 'admin@gservia.global',
+    email: 'user@gservia.global',
     fullName: 'كمال جعفر زكريا',
-    organization: 'GServia Global Enterprise',
+    organization: 'GServia Global SaaS',
     role: 'admin',
     currency: 'USD ($)',
     timezone: 'UTC (+00:00)',
     twoFactorEnabled: true,
-    securityScore: 96,
+    securityScore: 98,
     createdAt: '2026-08-01',
   }));
 
@@ -197,8 +224,8 @@ export default function App() {
     },
     {
       id: 'log_02',
-      action: 'Google Workspace Integration Scopes Sync',
-      actionAr: 'مزامنة أذونات تكامل Google Workspace الرسمية',
+      action: 'Gservia AI Intelligence Matcher Query',
+      actionAr: 'استعلام وتوليد حزمة توصيات رقمية ذكية',
       timestamp: new Date(Date.now() - 7200000).toISOString(),
       ip: '197.251.14.92',
       userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X)',
@@ -210,22 +237,22 @@ export default function App() {
   const [notifications, setNotifications] = useState<PlatformNotification[]>([
     {
       id: 'notif_1',
-      title: 'Google Cloud Integration Verified',
-      titleAr: 'تم توثيق تكامل Google Cloud بنجاح',
-      message: 'Zero-trust least-privilege OAuth grant established with GCP console.',
-      messageAr: 'تم تأسيس الربط الرسمي الآمن مع سحابة Google وفق مبدأ أقل الصلاحيات.',
+      title: 'Gservia SaaS Advisor Activated',
+      titleAr: 'تم تفعيل مستشار Gservia الذكي',
+      message: 'Natural language discovery engine is ready to match you with global SaaS tools.',
+      messageAr: 'محرك التحليل الذكي جاهز لإرشادك لأفضل الأدوات والخدمات العالمية بدقة.',
       type: 'success',
-      timestamp: '10m ago',
+      timestamp: 'Just now',
       isRead: false,
     },
     {
       id: 'notif_2',
-      title: 'Security Posture Audit',
-      titleAr: 'تقرير الأمان المؤسسي الدوري',
-      message: 'Zero credential logging verified. All external API tokens encrypted in transit.',
-      messageAr: 'تم التحقق من عدم تخزين أي كلمات مرور. كافة الرموز مشفرة ومؤمنة بالكامل.',
-      type: 'security',
-      timestamp: '1h ago',
+      title: 'Sudanese Dialect Audio Ad Live',
+      titleAr: 'الإعلان الصوتي الحماسي بالعامية السودانية متاح',
+      message: 'Listen to the promotional voiceover in Sudanese dialect.',
+      messageAr: 'استمع إلى التسجيل الإعلاني الصوتي الحماسي بصوت رجالي إذاعي.',
+      type: 'info',
+      timestamp: '5m ago',
       isRead: false,
     },
   ]);
@@ -281,130 +308,136 @@ export default function App() {
     }
   }, [recentServiceIds]);
 
-  // Toggle favorite helper
+  // Toggle favorite
   const handleToggleFavorite = (serviceId: string) => {
-    setFavorites((prev) =>
-      prev.includes(serviceId)
-        ? prev.filter((id) => id !== serviceId)
-        : [...prev, serviceId]
-    );
+    setFavorites((prev) => {
+      if (prev.includes(serviceId)) {
+        return prev.filter((id) => id !== serviceId);
+      } else {
+        return [...prev, serviceId];
+      }
+    });
   };
 
-  // Track service access helper
-  const handleTrackRecent = (service: GoogleService) => {
+  // Track recent service usage
+  const handleTrackRecent = (service: GlobalService) => {
     setRecentServiceIds((prev) => {
       const filtered = prev.filter((id) => id !== service.id);
       return [service.id, ...filtered].slice(0, 15);
     });
   };
 
+  // Clear all recent services
   const handleClearRecent = () => {
     setRecentServiceIds([]);
   };
 
+  // Toggle integration connection
+  const handleToggleIntegration = (id: string) => {
+    setIntegrations((prev) =>
+      prev.map((item) => {
+        if (item.id === id) {
+          const nextStatus = item.status === 'connected' ? 'disconnected' : 'connected';
+          return {
+            ...item,
+            status: nextStatus,
+            lastSynced: nextStatus === 'connected' ? 'الآن' : item.lastSynced,
+          };
+        }
+        return item;
+      })
+    );
+  };
+
+  // Terminate a single session
+  const handleTerminateSession = (sessionId: string) => {
+    setSessions((prev) => prev.filter((s) => s.id !== sessionId));
+  };
+
+  // Reset/Delete user account state
+  const handleDeleteAccount = () => {
+    setFavorites([]);
+    setRecentServiceIds([]);
+    localStorage.clear();
+    window.location.reload();
+  };
+
+  // Quick focus search input
+  const handleFocusSearch = () => {
+    const input = document.getElementById('search-input');
+    if (input) {
+      input.focus();
+      input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
+  // Smart Intent calculation based on natural language query
+  const smartIntent = useMemo(() => {
+    if (!searchQuery.trim()) return null;
+    return parseSmartIntent(searchQuery, lang);
+  }, [searchQuery, lang]);
+
+  // Filtered Services according to search and filters
+  const filteredServices = useMemo(() => {
+    let result = [...GLOBAL_SERVICES];
+
+    // 1. Natural Language Intent or text match
+    if (searchQuery.trim() !== '') {
+      if (smartIntent && smartIntent.matchedCategoryIds.length > 0) {
+        result = result.map((svc) => {
+          let score = svc.matchScore || 70;
+          if (smartIntent.matchedCategoryIds.includes(svc.categoryId)) {
+            score = 98;
+          }
+          return { ...svc, matchScore: score };
+        }).sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
+      } else {
+        const q = searchQuery.toLowerCase().trim();
+        result = result.filter(
+          (s) =>
+            s.name.toLowerCase().includes(q) ||
+            (s.nameAr && s.nameAr.includes(q)) ||
+            s.description.toLowerCase().includes(q) ||
+            s.descriptionAr.includes(q) ||
+            s.categoryId.toLowerCase().includes(q) ||
+            s.features.some((f) => f.toLowerCase().includes(q))
+        );
+      }
+    }
+
+    // 2. Category Filter
+    if (selectedCategory !== 'all') {
+      result = result.filter((s) => s.categoryId === selectedCategory);
+    }
+
+    // 3. Quick Filter
+    if (selectedQuickFilter === 'free') {
+      result = result.filter((s) => s.freePlan);
+    } else if (selectedQuickFilter === 'arabic') {
+      result = result.filter((s) => s.languages.includes('ar'));
+    } else if (selectedQuickFilter === 'featured') {
+      result = result.filter((s) => s.featured);
+    }
+
+    return result;
+  }, [searchQuery, selectedCategory, selectedQuickFilter, smartIntent]);
+
+  // Recent services list derived from IDs
   const recentServices = useMemo(() => {
     return recentServiceIds
-      .map((id) => GOOGLE_SERVICES.find((s) => s.id === id))
-      .filter((s): s is GoogleService => Boolean(s));
+      .map((id) => GLOBAL_SERVICES.find((s) => s.id === id))
+      .filter((s): s is GlobalService => s !== undefined);
   }, [recentServiceIds]);
 
-  // Focus search input handler
-  const handleFocusSearch = () => {
-    if (currentView !== 'services') {
-      setCurrentView('services');
-    }
-    setTimeout(() => {
-      const input = document.getElementById('main-search-input');
-      if (input) {
-        input.focus();
-        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }, 100);
-  };
-
-  // Toggle Integration connection helper
-  const handleToggleIntegration = (id: string, newStatus: 'connected' | 'disconnected') => {
-    setIntegrations((prev) =>
-      prev.map((mod) => (mod.id === id ? { ...mod, status: newStatus } : mod))
-    );
-    // Add audit log
-    const targetMod = integrations.find((i) => i.id === id);
-    if (targetMod) {
-      const newLog: SecurityAuditLog = {
-        id: `log_${Date.now()}`,
-        action: `Integration ${targetMod.name} status updated to ${newStatus}`,
-        actionAr: `تم تحديث حالة التكامل (${targetMod.nameAr}) إلى: ${newStatus === 'connected' ? 'متصل' : 'غير متصل'}`,
-        timestamp: new Date().toISOString(),
-        ip: '197.251.14.92',
-        status: 'success',
-      };
-      setAuditLogs([newLog, ...auditLogs]);
-    }
-  };
-
-  const handleTerminateSession = (sessionId: string) => {
-    setSessions(sessions.filter((s) => s.id !== sessionId));
-  };
-
-  const handleDeleteAccount = () => {
-    alert(lang === 'ar' ? 'تم حذف الجلسة والبيانات الحسابية بنجاح.' : 'Account data and active sessions cleared.');
-    setCurrentView('services');
-  };
-
-  // Normalize text for intelligent bilingual & multilingual search
-  const normalizeText = (text: string): string => {
-    return text
-      .toLowerCase()
-      .trim()
-      .replace(/[\u064B-\u065F]/g, '') // remove Arabic Harakat
-      .replace(/[أإآ]/g, 'ا')
-      .replace(/ة/g, 'ه')
-      .replace(/ى/g, 'ي');
-  };
-
-  // Filtered services logic
-  const filteredServices = useMemo(() => {
-    return GOOGLE_SERVICES.filter((service) => {
-      // 1. Quick Filters Filter
-      if (selectedQuickFilter === 'popular' && !service.isPopular) return false;
-      if (selectedQuickFilter === 'ai' && !(service.isAI || service.categoryId === 'ai-tools')) return false;
-      if (selectedQuickFilter === 'business' && !(service.isBusiness || service.categoryId === 'business-marketing')) return false;
-      if (selectedQuickFilter === 'dev' && !(service.isDev || service.categoryId === 'developer-cloud')) return false;
-      if (selectedQuickFilter === 'productivity' && service.categoryId !== 'productivity') return false;
-      if (selectedQuickFilter === 'storage' && service.categoryId !== 'storage-media') return false;
-
-      // 2. Category Filter
-      if (selectedCategory !== 'all' && service.categoryId !== selectedCategory) {
-        return false;
-      }
-
-      // 3. Search Query Filter
-      if (searchQuery.trim() !== '') {
-        const query = normalizeText(searchQuery);
-
-        const matchName = normalizeText(service.name).includes(query);
-        const matchNameAr = service.nameAr ? normalizeText(service.nameAr).includes(query) : false;
-        const matchDescAr = normalizeText(service.descriptionAr).includes(query);
-        const matchDescEn = normalizeText(service.descriptionEn).includes(query);
-        const matchKeywordsAr = service.keywordsAr.some((k) => normalizeText(k).includes(query) || query.includes(normalizeText(k)));
-        const matchKeywordsEn = service.keywordsEn.some((k) => normalizeText(k).includes(query) || query.includes(normalizeText(k)));
-
-        return matchName || matchNameAr || matchDescAr || matchDescEn || matchKeywordsAr || matchKeywordsEn;
-      }
-
-      return true;
-    });
-  }, [searchQuery, selectedQuickFilter, selectedCategory]);
-
   const getCategoryCount = (categoryId: string) => {
-    return GOOGLE_SERVICES.filter((s) => s.categoryId === categoryId).length;
+    return GLOBAL_SERVICES.filter((s) => s.categoryId === categoryId).length;
   };
 
   const t = getTranslation(lang);
   const unreadNotificationsCount = notifications.filter((n) => !n.isRead).length;
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col selection:bg-yellow-400 selection:text-black transition-colors duration-300 relative overflow-x-hidden pt-16 pb-16 md:pb-0">
+    <div className="min-h-screen bg-slate-950 text-white flex flex-col selection:bg-blue-500 selection:text-white transition-colors duration-300 relative overflow-x-hidden pt-16 pb-16 md:pb-0">
       
       {/* 0. Native & Web App Splash Screen */}
       {showSplash && (
@@ -442,7 +475,7 @@ export default function App() {
         {/* VIEW 1: SERVICES CATALOG (HOME) */}
         {currentView === 'services' && (
           <>
-            {/* 1. Hero Section with Search and Quick Filters */}
+            {/* 1. Hero Section with Smart Discovery & Advisor Trigger */}
             <HeroSection
               lang={lang}
               searchQuery={searchQuery}
@@ -454,71 +487,88 @@ export default function App() {
                   setSelectedCategory('all');
                 }
               }}
-              totalServicesCount={GOOGLE_SERVICES.length}
+              totalServicesCount={GLOBAL_SERVICES.length}
               filteredCount={filteredServices.length}
               onExploreClick={() => {
                 const section = document.getElementById('all-services');
                 section?.scrollIntoView({ behavior: 'smooth' });
               }}
+              onOpenAdvisor={() => setIsAdvisorModalOpen(true)}
+              onOpenCompare={() => setIsComparisonModalOpen(true)}
+              onOpenPricing={() => setIsPricingModalOpen(true)}
+              onOpenSubmit={() => setIsSubmitModalOpen(true)}
             />
+
+            {/* 1.1 Enthusiastic Sudanese Dialect Audio Ad Banner */}
+            <SudanesePromoAudioPlayer lang={lang} />
 
             {/* 2. Most Used Services Section */}
             {!searchQuery && selectedQuickFilter === 'all' && selectedCategory === 'all' && (
               <MostUsedSection
-                services={GOOGLE_SERVICES}
+                services={GLOBAL_SERVICES as any}
                 lang={lang}
                 favorites={favorites}
                 onToggleFavorite={handleToggleFavorite}
                 onSelectService={(service) => {
-                  handleTrackRecent(service);
-                  setSelectedServiceModal(service);
+                  handleTrackRecent(service as any);
+                  setSelectedServiceModal(service as any);
                 }}
-                onTrackRecent={handleTrackRecent}
+                onTrackRecent={handleTrackRecent as any}
               />
             )}
 
             {/* 3. AI Universe Dedicated Section */}
             {(!searchQuery && (selectedQuickFilter === 'all' || selectedQuickFilter === 'ai') && selectedCategory === 'all') && (
               <AIWorldSection
-                services={GOOGLE_SERVICES}
+                services={GLOBAL_SERVICES as any}
                 lang={lang}
                 favorites={favorites}
                 onToggleFavorite={handleToggleFavorite}
                 onSelectService={(service) => {
-                  handleTrackRecent(service);
-                  setSelectedServiceModal(service);
+                  handleTrackRecent(service as any);
+                  setSelectedServiceModal(service as any);
                 }}
-                onTrackRecent={handleTrackRecent}
+                onTrackRecent={handleTrackRecent as any}
               />
             )}
 
             {/* 4. Comprehensive All Services Catalog Section */}
-            <section id="all-services" className="py-16 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <section id="all-services" className="py-12 sm:py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               
               {/* Section Heading */}
-              <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+              <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4 text-start">
                 <div>
-                  <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-xl bg-[#111111] border border-yellow-400/40 text-yellow-400 text-xs font-black mb-3">
-                    <span>{lang === 'ar' ? 'الدليل الكامل' : 'Full Catalog'}</span>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-blue-950 border border-blue-500/40 text-blue-400 text-xs font-black mb-3">
+                    <span>{lang === 'ar' ? 'الدليل الشامل للخدمات' : 'Verified Services Directory'}</span>
                   </div>
                   <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                    {t.allServicesTitle}
+                    {lang === 'ar' ? 'استكشف الخدمات الرقمية المعتمدة' : 'Discover Verified Global Digital Services'}
                   </h2>
-                  <p className="text-sm sm:text-base text-neutral-200 mt-1 max-w-2xl font-medium">
-                    {t.allServicesSubtitle}
+                  <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl font-medium">
+                    {lang === 'ar' 
+                      ? 'اختر الخدمة الأنسب لمشروعك، اطلع على الأسعار والبدائل، وابدأ مباشرة.'
+                      : 'Compare verified SaaS platforms, analyze pricing and pros/cons, and launch instantly.'}
                   </p>
                 </div>
 
-                {/* Results Count */}
-                <div className="text-xs font-bold text-white bg-[#0e0e0e] px-4 py-2.5 rounded-xl border border-[#2a2a2a] shadow-md">
-                  <span>{lang === 'ar' ? 'المعروض:' : 'Showing:'} </span>
-                  <span className="text-yellow-400 font-black">{filteredServices.length}</span> {lang === 'ar' ? 'من أصل' : 'of'} <span className="font-black">{GOOGLE_SERVICES.length}</span>
+                {/* Results Count & Quick Compare action */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setIsComparisonModalOpen(true)}
+                    className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-blue-400 hover:text-white border border-slate-700 text-xs font-bold transition-all flex items-center gap-1.5"
+                  >
+                    <span>{lang === 'ar' ? 'مقارنة خدمتين' : 'Compare 2 Tools'}</span>
+                  </button>
+                  <div className="text-xs font-bold text-white bg-slate-900 px-4 py-2.5 rounded-xl border border-slate-800 shadow-md">
+                    <span>{lang === 'ar' ? 'المعروض:' : 'Showing:'} </span>
+                    <span className="text-blue-400 font-black">{filteredServices.length}</span> {lang === 'ar' ? 'من أصل' : 'of'} <span className="font-black">{GLOBAL_SERVICES.length}</span>
+                  </div>
                 </div>
               </div>
 
               {/* Category Tabs Filter Bar */}
               <CategoryFilterBar
-                categories={CATEGORIES}
+                categories={GLOBAL_CATEGORIES as any}
                 selectedCategory={selectedCategory}
                 onSelectCategory={(id) => {
                   setSelectedCategory(id);
@@ -528,13 +578,13 @@ export default function App() {
                 }}
                 lang={lang}
                 getCategoryCount={getCategoryCount}
-                totalServicesCount={GOOGLE_SERVICES.length}
+                totalServicesCount={GLOBAL_SERVICES.length}
               />
 
               {/* Services Grid / Catalog */}
               <ServicesGrid
                 services={filteredServices}
-                categories={CATEGORIES}
+                categories={GLOBAL_CATEGORIES}
                 selectedCategory={selectedCategory}
                 searchQuery={searchQuery}
                 onClearSearch={() => setSearchQuery('')}
@@ -547,13 +597,34 @@ export default function App() {
                   setSelectedServiceModal(service);
                 }}
                 onTrackRecent={handleTrackRecent}
+                smartIntent={smartIntent}
+                onOpenAdvisor={() => setIsAdvisorModalOpen(true)}
               />
 
             </section>
 
-            {/* 5. About GServia & Independence Disclaimer Section */}
+            {/* 5. About Gservia & Platform Mission Section */}
             <AboutGoogleSection lang={lang} />
           </>
+        )}
+
+        {/* VIEW: CATEGORIES EXPLORER */}
+        {currentView === 'categories' && (
+          <CategoriesExplorerView
+            lang={lang}
+            onSelectCategory={(catId) => setSelectedCategory(catId)}
+            onSelectService={(svc) => {
+              handleTrackRecent(svc);
+              setSelectedServiceModal(svc);
+            }}
+            favorites={favorites}
+            onToggleFavorite={handleToggleFavorite}
+          />
+        )}
+
+        {/* VIEW: ADMIN CONTROL CENTER */}
+        {currentView === 'admin' && (
+          <AdminDashboardView lang={lang} />
         )}
 
         {/* VIEW 2: DASHBOARD VIEW */}
@@ -562,11 +633,11 @@ export default function App() {
             lang={lang}
             user={user}
             integrations={integrations}
-            totalServicesCount={GOOGLE_SERVICES.length}
+            totalServicesCount={GLOBAL_SERVICES.length}
             favoritesCount={favorites.length}
             onNavigate={(view) => setCurrentView(view)}
             onSelectServiceModal={(serviceId) => {
-              const svc = GOOGLE_SERVICES.find((s) => s.id === serviceId);
+              const svc = GLOBAL_SERVICES.find((s) => s.id === serviceId);
               if (svc) setSelectedServiceModal(svc);
             }}
           />
@@ -609,7 +680,7 @@ export default function App() {
       {/* Footer */}
       <Footer
         lang={lang}
-        categories={CATEGORIES}
+        categories={GLOBAL_CATEGORIES as any}
         onSelectCategory={(id) => {
           if (currentView !== 'services') setCurrentView('services');
           setSelectedCategory(id);
@@ -621,6 +692,49 @@ export default function App() {
         onOpenLangModal={() => setIsLangModalOpen(true)}
       />
 
+      {/* 🌟 GSERVIA AI ADVISOR MODAL */}
+      <GserviaAdvisorModal
+        isOpen={isAdvisorModalOpen}
+        onClose={() => setIsAdvisorModalOpen(false)}
+        lang={lang}
+        onSelectService={(svc) => {
+          setIsAdvisorModalOpen(false);
+          handleTrackRecent(svc);
+          setSelectedServiceModal(svc);
+        }}
+        onCompareServices={(s1, s2) => {
+          setIsAdvisorModalOpen(false);
+          setPreselectedComparison({ s1, s2 });
+          setIsComparisonModalOpen(true);
+        }}
+      />
+
+      {/* 🌟 COMPARISON STUDIO MODAL */}
+      <ComparisonStudioModal
+        isOpen={isComparisonModalOpen}
+        onClose={() => {
+          setIsComparisonModalOpen(false);
+          setPreselectedComparison({});
+        }}
+        lang={lang}
+        initialService1={preselectedComparison.s1}
+        initialService2={preselectedComparison.s2}
+      />
+
+      {/* 🌟 SUBMIT SERVICE MODAL */}
+      <SubmitServiceModal
+        isOpen={isSubmitModalOpen}
+        onClose={() => setIsSubmitModalOpen(false)}
+        lang={lang}
+      />
+
+      {/* 🌟 SAAS PRICING MODAL */}
+      <SaaSPricingModal
+        isOpen={isPricingModalOpen}
+        onClose={() => setIsPricingModalOpen(false)}
+        lang={lang}
+      />
+
       {/* Detail Modal */}
       <ServiceDetailModal
         service={selectedServiceModal}
@@ -629,6 +743,11 @@ export default function App() {
         isFavorite={selectedServiceModal ? favorites.includes(selectedServiceModal.id) : false}
         onToggleFavorite={handleToggleFavorite}
         onTrackRecent={handleTrackRecent}
+        onCompareWithAnother={(service) => {
+          setSelectedServiceModal(null);
+          setPreselectedComparison({ s1: service });
+          setIsComparisonModalOpen(true);
+        }}
       />
 
       {/* Favorites Launchpad Drawer */}
@@ -636,22 +755,22 @@ export default function App() {
         isOpen={isFavoritesDrawerOpen}
         onClose={() => setIsFavoritesDrawerOpen(false)}
         favorites={favorites}
-        allServices={GOOGLE_SERVICES}
+        allServices={GLOBAL_SERVICES as any}
         lang={lang}
         onToggleFavorite={handleToggleFavorite}
         onSelectService={(service) => {
           setIsFavoritesDrawerOpen(false);
-          handleTrackRecent(service);
-          setSelectedServiceModal(service);
+          handleTrackRecent(service as any);
+          setSelectedServiceModal(service as any);
         }}
-        onTrackRecent={handleTrackRecent}
+        onTrackRecent={handleTrackRecent as any}
       />
 
       {/* Recent Services Drawer */}
       <RecentServicesDrawer
         isOpen={isRecentDrawerOpen}
         onClose={() => setIsRecentDrawerOpen(false)}
-        recentServices={recentServices}
+        recentServices={recentServices as any}
         onClearRecent={handleClearRecent}
         lang={lang}
         onSelectService={(service) => {

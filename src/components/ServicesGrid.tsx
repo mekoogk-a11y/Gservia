@@ -1,13 +1,20 @@
-import React from 'react';
-import { GoogleService, ServiceCategory, Language } from '../types';
-import { getTranslation } from '../data/translations';
+import React, { useState } from 'react';
+import { GlobalService, GlobalCategory, Language, SmartSearchIntent, UserLevel } from '../types';
 import { ServiceCard } from './ServiceCard';
-import { ServiceIcon } from './ServiceIcon';
-import { SearchX, RefreshCw } from 'lucide-react';
+import { 
+  SearchX, 
+  RefreshCw, 
+  Sparkles, 
+  Layers, 
+  CheckCircle2, 
+  Filter, 
+  SlidersHorizontal,
+  ExternalLink
+} from 'lucide-react';
 
 interface ServicesGridProps {
-  services: GoogleService[];
-  categories: ServiceCategory[];
+  services: GlobalService[];
+  categories: GlobalCategory[];
   selectedCategory: string;
   searchQuery: string;
   onClearSearch: () => void;
@@ -15,8 +22,10 @@ interface ServicesGridProps {
   lang: Language;
   favorites: string[];
   onToggleFavorite: (serviceId: string) => void;
-  onSelectService: (service: GoogleService) => void;
-  onTrackRecent?: (service: GoogleService) => void;
+  onSelectService: (service: GlobalService) => void;
+  onTrackRecent?: (service: GlobalService) => void;
+  smartIntent?: SmartSearchIntent | null;
+  onOpenAdvisor?: () => void;
 }
 
 export const ServicesGrid: React.FC<ServicesGridProps> = ({
@@ -31,124 +40,190 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({
   onToggleFavorite,
   onSelectService,
   onTrackRecent,
+  smartIntent,
+  onOpenAdvisor,
 }) => {
-  const t = getTranslation(lang);
+  const isArabic = lang === 'ar';
+  const [filterFreeOnly, setFilterFreeOnly] = useState<boolean>(false);
+  const [filterArabicOnly, setFilterArabicOnly] = useState<boolean>(false);
+  const [selectedLevel, setSelectedLevel] = useState<string>('all');
 
-  // Suggestions for empty state
-  const searchSuggestions = lang === 'ar'
-    ? ['بريد', 'فيديو', 'مستندات', 'خرائط', 'تخزين', 'اعلانات', 'سحابة', 'ترجمة']
-    : ['email', 'video', 'docs', 'maps', 'storage', 'ads', 'cloud', 'translate'];
+  // Filter services locally by quick filter controls
+  let displayedServices = [...services];
 
-  // If no services match search or filter
-  if (services.length === 0) {
-    return (
-      <div className="py-16 text-center bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-md max-w-2xl mx-auto text-slate-900 dark:text-white">
-        <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto mb-4 border border-blue-200 dark:border-blue-800 shadow-xs">
-          <SearchX className="w-8 h-8" />
+  if (filterFreeOnly) {
+    displayedServices = displayedServices.filter(s => s.freePlan);
+  }
+
+  if (filterArabicOnly) {
+    displayedServices = displayedServices.filter(s => s.languages.includes('ar'));
+  }
+
+  if (selectedLevel !== 'all') {
+    displayedServices = displayedServices.filter(s => s.userLevel.includes(selectedLevel as UserLevel));
+  }
+
+  const searchSuggestions = isArabic
+    ? ['متجر إلكتروني', 'تصميم شعار', 'حوالة دولية', 'إدارة مشاريع', 'موقع بدون برمجة', 'ذكاء اصطناعي']
+    : ['online store', 'design logo', 'money transfer', 'manage projects', 'no-code website', 'ai assistant'];
+
+  return (
+    <div id="services-catalog-view" className="space-y-6 text-start">
+      
+      {/* Smart Intent Explanation Banner (If search query exists) */}
+      {searchQuery.trim() && smartIntent && (
+        <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-blue-950/80 via-slate-900 to-indigo-950/80 border-2 border-blue-500/50 shadow-xl">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-blue-600 text-white uppercase tracking-wider">
+                  {isArabic ? 'تحليل النية الذكي' : 'Intent Analysis'}
+                </span>
+                <h4 className="text-sm sm:text-base font-black text-white">
+                  {isArabic ? smartIntent.detectedIntentAr : smartIntent.detectedIntent}
+                </h4>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
+                {isArabic ? smartIntent.recommendationExplanationAr : smartIntent.recommendationExplanation}
+              </p>
+            </div>
+
+            {onOpenAdvisor && (
+              <button
+                onClick={onOpenAdvisor}
+                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shrink-0 transition-all shadow-md flex items-center justify-center gap-1.5 self-start md:self-auto"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>{isArabic ? 'تخصيص عبر المستشار' : 'Fine-tune in Advisor'}</span>
+              </button>
+            )}
+          </div>
+
+          {/* Recommended Tool Stack Banner */}
+          {smartIntent.recommendedStack && (
+            <div className="mt-4 pt-3 border-t border-slate-800">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-purple-300 mb-2">
+                <Layers className="w-3.5 h-3.5" />
+                <span>{isArabic ? smartIntent.recommendedStack.titleAr : smartIntent.recommendedStack.title}</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {smartIntent.recommendedStack.tools.map((t, idx) => (
+                  <div key={idx} className="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-700/80 text-xs flex items-center gap-1.5">
+                    <span className="w-4 h-4 rounded-full bg-purple-950 text-purple-300 text-[10px] font-black flex items-center justify-center">
+                      {idx + 1}
+                    </span>
+                    <span className="font-bold text-white">{t.serviceName}</span>
+                    <span className="text-slate-400 text-[11px]">({isArabic ? t.roleAr : t.role})</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-        <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">
-          {t.noResultsTitle}
-        </h3>
-        <p className="text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto mb-6 font-medium">
-          {t.noResultsDesc}
-        </p>
+      )}
 
-        {/* Suggestion Chips */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
-          {searchSuggestions.map((term, idx) => (
-            <button
-              key={idx}
-              onClick={() => onSearchSuggestion(term)}
-              className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all"
-            >
-              {term}
-            </button>
+      {/* Filter and Refinement Control Bar */}
+      <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+        
+        {/* Quick Toggles */}
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setFilterFreeOnly(!filterFreeOnly)}
+            className={`px-3 py-1.5 rounded-xl font-bold transition-all border ${
+              filterFreeOnly
+                ? 'bg-emerald-600 text-white border-emerald-400 shadow-sm'
+                : 'bg-slate-950 text-slate-400 hover:text-white border-slate-800'
+            }`}
+          >
+            {isArabic ? '🟢 خطة مجانية متاحة' : '🟢 Free Plan Available'}
+          </button>
+
+          <button
+            onClick={() => setFilterArabicOnly(!filterArabicOnly)}
+            className={`px-3 py-1.5 rounded-xl font-bold transition-all border ${
+              filterArabicOnly
+                ? 'bg-purple-600 text-white border-purple-400 shadow-sm'
+                : 'bg-slate-950 text-slate-400 hover:text-white border-slate-800'
+            }`}
+          >
+            {isArabic ? '🇸🇦 واجهة عربية' : '🇸🇦 Arabic Supported'}
+          </button>
+
+          {/* Level Filter */}
+          <select
+            value={selectedLevel}
+            onChange={(e) => setSelectedLevel(e.target.value)}
+            className="px-3 py-1.5 bg-slate-950 text-slate-300 font-semibold rounded-xl border border-slate-800 focus:outline-none"
+          >
+            <option value="all">{isArabic ? 'كل المستويات' : 'All Levels'}</option>
+            <option value="Beginner">{isArabic ? 'مبتدئ (سهل الإعداد)' : 'Beginner Friendly'}</option>
+            <option value="Intermediate">{isArabic ? 'متوسط' : 'Intermediate'}</option>
+            <option value="Advanced">{isArabic ? 'مطور ومتقدم' : 'Advanced & Dev'}</option>
+            <option value="Business">{isArabic ? 'شركات' : 'Business'}</option>
+          </select>
+        </div>
+
+        {/* Results Counter */}
+        <div className="text-slate-400 font-medium">
+          {displayedServices.length} {isArabic ? 'خدمة معتمدة' : 'verified services'}
+        </div>
+      </div>
+
+      {/* Empty State */}
+      {displayedServices.length === 0 ? (
+        <div className="py-16 text-center bg-slate-900 rounded-3xl border border-slate-800 p-8 shadow-md max-w-2xl mx-auto text-white">
+          <div className="w-16 h-16 rounded-2xl bg-blue-950 text-blue-400 flex items-center justify-center mx-auto mb-4 border border-blue-800">
+            <SearchX className="w-8 h-8" />
+          </div>
+          <h3 className="text-lg font-black mb-2 text-white">
+            {isArabic ? 'لم نجد خدمات تطابق هذه المعايير بالضبط' : 'No matching services found'}
+          </h3>
+          <p className="text-xs text-slate-400 max-w-md mx-auto mb-6">
+            {isArabic ? 'جرب البحث بكلمات أخرى أو اختر من المقترحات السريعة أدناه:' : 'Try adjusting your search terms or choose from popular suggestions:'}
+          </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
+            {searchSuggestions.map((term, idx) => (
+              <button
+                key={idx}
+                onClick={() => onSearchSuggestion(term)}
+                className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-blue-600 text-slate-300 hover:text-white border border-slate-700 transition-all"
+              >
+                {term}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => {
+              setFilterFreeOnly(false);
+              setFilterArabicOnly(false);
+              setSelectedLevel('all');
+              onClearSearch();
+            }}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 shadow-md transition-all"
+          >
+            <RefreshCw className="w-4 h-4" />
+            <span>{isArabic ? 'إعادة ضبط البحث والفلاتر' : 'Reset Search & Filters'}</span>
+          </button>
+        </div>
+      ) : (
+        /* Results Grid */
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {displayedServices.map((service) => (
+            <ServiceCard
+              key={service.id}
+              service={service}
+              lang={lang}
+              isFavorite={favorites.includes(service.id)}
+              onToggleFavorite={onToggleFavorite}
+              onSelectService={onSelectService}
+              onTrackRecent={onTrackRecent}
+            />
           ))}
         </div>
+      )}
 
-        <button
-          onClick={onClearSearch}
-          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-sm shadow-blue-500/20 transition-all"
-        >
-          <RefreshCw className="w-4 h-4" />
-          <span>{t.clearSearch}</span>
-        </button>
-      </div>
-    );
-  }
-
-  // If there's an active search query or a specific category selected, show flat grid
-  if (searchQuery.trim() !== '' || selectedCategory !== 'all') {
-    return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
-        {services.map((service) => (
-          <ServiceCard
-            key={service.id}
-            service={service}
-            lang={lang}
-            isFavorite={favorites.includes(service.id)}
-            onToggleFavorite={onToggleFavorite}
-            onSelectService={onSelectService}
-            onTrackRecent={onTrackRecent}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  // Grouped by categories view
-  return (
-    <div className="space-y-12">
-      {categories.map((cat) => {
-        const catServices = services.filter((s) => s.categoryId === cat.id);
-        if (catServices.length === 0) return null;
-
-        const catTitle = lang === 'ar' ? cat.titleAr : cat.titleEn;
-        const catDesc = lang === 'ar' ? cat.descriptionAr : cat.descriptionEn;
-
-        return (
-          <div key={cat.id} id={`category-group-${cat.id}`} className="scroll-mt-24">
-            
-            {/* Category Header */}
-            <div className="flex items-center justify-between pb-3.5 mb-5 border-b border-slate-200 dark:border-slate-800">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 flex items-center justify-center shadow-xs">
-                  <ServiceIcon name={cat.iconName} className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
-                    {catTitle}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">
-                    {catDesc}
-                  </p>
-                </div>
-              </div>
-
-              <span className="text-xs font-semibold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-3 py-1 rounded-full border border-blue-200 dark:border-blue-800">
-                {catServices.length} {lang === 'ar' ? 'خدمة' : 'services'}
-              </span>
-            </div>
-
-            {/* Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
-              {catServices.map((service) => (
-                <ServiceCard
-                  key={service.id}
-                  service={service}
-                  lang={lang}
-                  isFavorite={favorites.includes(service.id)}
-                  onToggleFavorite={onToggleFavorite}
-                  onSelectService={onSelectService}
-                  onTrackRecent={onTrackRecent}
-                />
-              ))}
-            </div>
-
-          </div>
-        );
-      })}
     </div>
   );
 };
-

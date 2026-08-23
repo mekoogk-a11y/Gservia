@@ -30,7 +30,7 @@ import {
   Grid
 } from 'lucide-react';
 
-export type MainViewType = 'services' | 'dashboard' | 'integrations' | 'marketplace' | 'developers' | 'account';
+export type MainViewType = 'services' | 'categories' | 'dashboard' | 'integrations' | 'marketplace' | 'developers' | 'account' | 'admin';
 
 interface NavbarProps {
   lang: Language;

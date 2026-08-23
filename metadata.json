@@ -1,6 +1,6 @@
 {
   "name": "GServia — Universal Ecosystem Platform & Google Services Hub",
-  "description": "GServia is an independent, enterprise-grade global ecosystem platform and gateway providing official integrations, Google services catalog, marketplace extensions, and developer APIs.",
-  "requestFramePermissions": [],
+  "description": "Gservia is a Global Digital Services Discovery & Recommendation SaaS platform that understands user intent and guides them to the best tools, comparisons, and tool stacks.",
+  "requestFramePermissions": ["microphone"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

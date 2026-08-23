@@ -49,18 +49,18 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
 
   // Filter services locally by quick filter controls
-  let displayedServices = [...services];
+  let displayedServices = [...(services || [])];
 
   if (filterFreeOnly) {
     displayedServices = displayedServices.filter(s => s.freePlan);
   }
 
   if (filterArabicOnly) {
-    displayedServices = displayedServices.filter(s => s.languages.includes('ar'));
+    displayedServices = displayedServices.filter(s => (s.languages || []).includes('ar'));
   }
 
   if (selectedLevel !== 'all') {
-    displayedServices = displayedServices.filter(s => s.userLevel.includes(selectedLevel as UserLevel));
+    displayedServices = displayedServices.filter(s => (s.userLevel || []).includes(selectedLevel as UserLevel));
   }
 
   const searchSuggestions = isArabic
@@ -107,7 +107,7 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({
                 <span>{isArabic ? smartIntent.recommendedStack.titleAr : smartIntent.recommendedStack.title}</span>
               </div>
               <div className="flex flex-wrap gap-2">
-                {smartIntent.recommendedStack.tools.map((t, idx) => (
+                {(smartIntent.recommendedStack.tools || []).map((t, idx) => (
                   <div key={idx} className="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-700/80 text-xs flex items-center gap-1.5">
                     <span className="w-4 h-4 rounded-full bg-purple-950 text-purple-300 text-[10px] font-black flex items-center justify-center">
                       {idx + 1}

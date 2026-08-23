@@ -126,6 +126,7 @@ export interface SmartSearchIntent {
   detectedIntent: string;
   detectedIntentAr: string;
   category: string;
+  matchedCategoryIds?: string[];
   subcategory?: string;
   requirements: string[];
   budget: 'free' | 'low' | 'flexible' | 'enterprise';

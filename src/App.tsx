@@ -247,10 +247,10 @@ export default function App() {
     },
     {
       id: 'notif_2',
-      title: 'Sudanese Dialect Audio Ad Live',
-      titleAr: 'الإعلان الصوتي الحماسي بالعامية السودانية متاح',
-      message: 'Listen to the promotional voiceover in Sudanese dialect.',
-      messageAr: 'استمع إلى التسجيل الإعلاني الصوتي الحماسي بصوت رجالي إذاعي.',
+      title: 'Studio Commercial Audio Available',
+      titleAr: 'الإعلان الصوتي الإذاعي (فصحى وإنجليزية)',
+      message: 'Listen to the official promotional voiceover in Modern Standard Arabic & American English.',
+      messageAr: 'استمع للتسجيل الإعلاني الصوتي بصوت إذاعي فخم باللغة العربية الفصحى والإنجليزية الأمريكية.',
       type: 'info',
       timestamp: '5m ago',
       isRead: false,
@@ -383,10 +383,11 @@ export default function App() {
 
     // 1. Natural Language Intent or text match
     if (searchQuery.trim() !== '') {
-      if (smartIntent && smartIntent.matchedCategoryIds.length > 0) {
+      const categoryIds = smartIntent?.matchedCategoryIds || (smartIntent?.category ? [smartIntent.category] : []);
+      if (categoryIds.length > 0) {
         result = result.map((svc) => {
           let score = svc.matchScore || 70;
-          if (smartIntent.matchedCategoryIds.includes(svc.categoryId)) {
+          if (categoryIds.includes(svc.categoryId)) {
             score = 98;
           }
           return { ...svc, matchScore: score };
@@ -395,12 +396,13 @@ export default function App() {
         const q = searchQuery.toLowerCase().trim();
         result = result.filter(
           (s) =>
-            s.name.toLowerCase().includes(q) ||
+            (s.name && s.name.toLowerCase().includes(q)) ||
             (s.nameAr && s.nameAr.includes(q)) ||
-            s.description.toLowerCase().includes(q) ||
-            s.descriptionAr.includes(q) ||
-            s.categoryId.toLowerCase().includes(q) ||
-            s.features.some((f) => f.toLowerCase().includes(q))
+            (s.description && s.description.toLowerCase().includes(q)) ||
+            (s.descriptionAr && s.descriptionAr.includes(q)) ||
+            (s.categoryId && s.categoryId.toLowerCase().includes(q)) ||
+            (s.features && s.features.some((f) => f && f.toLowerCase().includes(q))) ||
+            (s.featuresAr && s.featuresAr.some((f) => f && f.includes(q)))
         );
       }
     }

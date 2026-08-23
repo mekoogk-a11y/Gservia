@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Centered Gservia Emblem with Padding for Adaptive Icons -->
+    <group
+        android:scaleX="0.65"
+        android:scaleY="0.65"
+        android:translateX="18.9"
+        android:translateY="18.9">
+        <path
+            android:fillColor="#2563EB"
+            android:pathData="M78,34 A32,32 0 1,0 86,54 L54,54 L54,46 L88,46 A36,36 0 1,1 80,28 Z" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M54,54m-7,0a7,7 0,1,1 14,0a7,7 0,1,1 -14,0" />
+        <path
+            android:fillColor="#38BDF8"
+            android:pathData="M54,14m-4,0a4,4 0,1,1 8,0a4,4 0,1,1 -8,0" />
+        <path
+            android:fillColor="#818CF8"
+            android:pathData="M94,54m-4,0a4,4 0,1,1 8,0a4,4 0,1,1 -8,0" />
+        <path
+            android:fillColor="#34D399"
+            android:pathData="M54,94m-4,0a4,4 0,1,1 8,0a4,4 0,1,1 -8,0" />
+        <path
+            android:fillColor="#F43F5E"
+            android:pathData="M14,54m-4,0a4,4 0,1,1 8,0a4,4 0,1,1 -8,0" />
+    </group>
+</vector>

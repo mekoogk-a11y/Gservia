@@ -1,9 +1,9 @@
 {
-  "name": "GServia — Global Google Services Hub",
-  "short_name": "GServia",
-  "description": "GServia is your independent global gateway to discover, organize, and access official Google services from one powerful platform.",
+  "name": "Gservia — Global Google Services Hub",
+  "short_name": "Gservia",
+  "description": "Gservia is your independent global gateway to discover, organize, and access official Google services from one powerful platform.",
   "start_url": "/",
-  "id": "/",
+  "id": "com.gservia.app",
   "display": "standalone",
   "background_color": "#090E1A",
   "theme_color": "#2563EB",
@@ -39,10 +39,10 @@
       "icons": [{ "src": "/icon-192.svg", "sizes": "192x192" }]
     },
     {
-      "name": "Most Used Tools",
-      "short_name": "Popular",
-      "description": "Quick launch top Google services",
-      "url": "/#most-used",
+      "name": "Favorites",
+      "short_name": "Favorites",
+      "description": "Quick launch top favorite services",
+      "url": "/#favorites",
       "icons": [{ "src": "/icon-192.svg", "sizes": "192x192" }]
     }
   ]

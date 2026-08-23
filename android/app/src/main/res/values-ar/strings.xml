@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Gservia</string>
+    <string name="app_tagline">بوابتك العالمية إلى خدمات Google</string>
+    <string name="offline_msg">لا يوجد اتصال بالإنترنت. يتم عرض الخدمات المحفوظة محلياً.</string>
+    <string name="retry_btn">إعادة المحاولة</string>
+    <string name="notification_channel_name">تحديثات Gservia</string>
+    <string name="notification_channel_desc">إشعارات التحديثات وأحدث خدمات ومنتجات Google والذكاء الاصطناعي</string>
+</resources>

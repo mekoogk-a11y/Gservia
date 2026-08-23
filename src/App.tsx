@@ -36,10 +36,22 @@ import { DeveloperPlatformView } from './components/DeveloperPlatformView';
 import { AccountSecurityView } from './components/AccountSecurityView';
 import { AuthModal } from './components/AuthModal';
 import { NotificationsModal } from './components/NotificationsModal';
+import { SplashScreen } from './components/SplashScreen';
+import { MobileBottomNav } from './components/MobileBottomNav';
+import { OfflineBanner } from './components/OfflineBanner';
+import { AndroidPublishModal } from './components/AndroidPublishModal';
+import { useNetworkStatus } from './hooks/useNetworkStatus';
+import { useAndroidBackButton } from './hooks/useAndroidBackButton';
 
 export default function App() {
+  // 0. Splash Screen state
+  const [showSplash, setShowSplash] = useState<boolean>(true);
+
   // 1. Navigation View State
   const [currentView, setCurrentView] = useState<MainViewType>('services');
+
+  // 1.1 Network status tracking
+  const network = useNetworkStatus();
 
   // 2. Language state with auto-detection & localStorage persistence
   const [lang, setLang] = useState<Language>(() => {
@@ -78,6 +90,42 @@ export default function App() {
   const [isTermsModalOpen, setIsTermsModalOpen] = useState<boolean>(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [isNotificationsModalOpen, setIsNotificationsModalOpen] = useState<boolean>(false);
+  const [isAndroidPublishModalOpen, setIsAndroidPublishModalOpen] = useState<boolean>(false);
+
+  // Close all open modals helper for hardware back button
+  const handleCloseAllModals = () => {
+    setSelectedServiceModal(null);
+    setIsFavoritesDrawerOpen(false);
+    setIsRecentDrawerOpen(false);
+    setIsLangModalOpen(false);
+    setIsInstallModalOpen(false);
+    setIsPrivacyModalOpen(false);
+    setIsTermsModalOpen(false);
+    setIsAuthModalOpen(false);
+    setIsNotificationsModalOpen(false);
+    setIsAndroidPublishModalOpen(false);
+  };
+
+  const hasAnyModalOpen = Boolean(
+    selectedServiceModal ||
+    isFavoritesDrawerOpen ||
+    isRecentDrawerOpen ||
+    isLangModalOpen ||
+    isInstallModalOpen ||
+    isPrivacyModalOpen ||
+    isTermsModalOpen ||
+    isAuthModalOpen ||
+    isNotificationsModalOpen ||
+    isAndroidPublishModalOpen
+  );
+
+  // Hardware/Browser Back Button Handling for Android
+  useAndroidBackButton({
+    hasOpenModal: hasAnyModalOpen,
+    onCloseModals: handleCloseAllModals,
+    isSubView: currentView !== 'services',
+    onReturnToRoot: () => setCurrentView('services'),
+  });
 
   // 6. Favorites state
   const [favorites, setFavorites] = useState<string[]>(() => {
@@ -356,8 +404,16 @@ export default function App() {
   const unreadNotificationsCount = notifications.filter((n) => !n.isRead).length;
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col selection:bg-yellow-400 selection:text-black transition-colors duration-300 relative overflow-x-hidden pt-16">
+    <div className="min-h-screen bg-black text-white flex flex-col selection:bg-yellow-400 selection:text-black transition-colors duration-300 relative overflow-x-hidden pt-16 pb-16 md:pb-0">
       
+      {/* 0. Native & Web App Splash Screen */}
+      {showSplash && (
+        <SplashScreen onFinish={() => setShowSplash(false)} lang={lang} />
+      )}
+
+      {/* 0.1 Offline Resilience Indicator Banner */}
+      <OfflineBanner isOnline={network.isOnline} lang={lang} />
+
       {/* Sticky Navigation Bar */}
       <Navbar
         lang={lang}
@@ -377,6 +433,7 @@ export default function App() {
         onOpenInstallModal={() => setIsInstallModalOpen(true)}
         onOpenPrivacyModal={() => setIsPrivacyModalOpen(true)}
         onOpenTermsModal={() => setIsTermsModalOpen(true)}
+        onOpenAndroidPublishModal={() => setIsAndroidPublishModalOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -649,6 +706,23 @@ export default function App() {
         notifications={notifications}
         onMarkAllRead={() => setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })))}
         onClearNotifications={() => setNotifications([])}
+      />
+
+      {/* Android & Google Play Publishing Hub Modal */}
+      <AndroidPublishModal
+        isOpen={isAndroidPublishModalOpen}
+        onClose={() => setIsAndroidPublishModalOpen(false)}
+        lang={lang}
+      />
+
+      {/* Mobile / Tablet Bottom Navigation Bar */}
+      <MobileBottomNav
+        currentView={currentView}
+        onSelectView={(view) => setCurrentView(view)}
+        favoritesCount={favorites.length}
+        onOpenFavorites={() => setIsFavoritesDrawerOpen(true)}
+        onOpenRecents={() => setIsRecentDrawerOpen(true)}
+        lang={lang}
       />
 
     </div>

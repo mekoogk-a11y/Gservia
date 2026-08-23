@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Gservia</string>
+    <string name="app_tagline">Your Gateway to Google Services</string>
+    <string name="offline_msg">No internet connection. Showing cached catalog.</string>
+    <string name="retry_btn">Retry</string>
+    <string name="notification_channel_name">Gservia Updates</string>
+    <string name="notification_channel_desc">Important updates about Google services and AI ecosystem</string>
+</resources>

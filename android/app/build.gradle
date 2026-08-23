@@ -1,0 +1,85 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.gservia.app'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.gservia.app"
+        minSdk 24
+        targetSdk 35
+        versionCode 1
+        versionName "1.0.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
+    }
+
+    signingConfigs {
+        release {
+            // Can be configured with environment variables or gradle.properties in CI/CD
+            storeFile file(System.getenv("KEYSTORE_PATH") ?: "release-keystore.jks")
+            storePassword System.getenv("KEYSTORE_PASSWORD") ?: "gserviaPass123"
+            keyAlias System.getenv("KEY_ALIAS") ?: "gservia"
+            keyPassword System.getenv("KEY_PASSWORD") ?: "gserviaPass123"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // To use release signing config when keystore is provided:
+            // signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
+        }
+        debug {
+            applicationIdSuffix ".debug"
+            debuggable true
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    buildFeatures {
+        viewBinding true
+        buildConfig true
+    }
+
+    bundle {
+        language {
+            enableSplit = false // Retain all multi-language translations inside single bundle
+        }
+        density {
+            enableSplit = true
+        }
+        abi {
+            enableSplit = true
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.webkit:webkit:1.11.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation 'androidx.browser:browser:1.8.0' // Chrome Custom Tabs support
+    implementation 'androidx.core:core-splashscreen:1.0.1' // Modern Android 12+ Splash API
+    
+    // Lifecycle & Coroutines
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.8.4'
+}

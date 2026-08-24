@@ -38,7 +38,6 @@ import { SubmitServiceModal } from './components/SubmitServiceModal';
 import { SaaSPricingModal } from './components/SaaSPricingModal';
 import { CategoriesExplorerView } from './components/CategoriesExplorerView';
 import { AdminDashboardView } from './components/AdminDashboardView';
-import { SudanesePromoAudioPlayer } from './components/SudanesePromoAudioPlayer';
 
 // Enterprise Multi-Ecosystem Views
 import { DashboardView } from './components/DashboardView';
@@ -54,6 +53,7 @@ import { OfflineBanner } from './components/OfflineBanner';
 import { AndroidPublishModal } from './components/AndroidPublishModal';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
 import { useAndroidBackButton } from './hooks/useAndroidBackButton';
+import { useDynamicSEO } from './hooks/useDynamicSEO';
 
 export default function App() {
   // 0. Splash Screen state
@@ -86,6 +86,23 @@ export default function App() {
       return 'dark';
     }
   });
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('gservia_theme', theme);
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    } catch {
+      // ignore
+    }
+  }, [theme]);
 
   // 4. Search and Category Filter states
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -153,6 +170,51 @@ export default function App() {
     isSubView: currentView !== 'services',
     onReturnToRoot: () => setCurrentView('services'),
   });
+
+  // Dynamic SEO meta tags, title, description, OpenGraph & JSON-LD schema sync
+  useDynamicSEO({
+    service: selectedServiceModal,
+    lang,
+  });
+
+  // Sync URL hash / deep linking for direct tool indexing
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    // Check initial hash/params on mount
+    const handleCheckHash = () => {
+      const hash = window.location.hash;
+      const match = hash.match(/^#service-([\w-]+)$/);
+      if (match && match[1]) {
+        const targetSlugOrId = match[1];
+        const found = GLOBAL_SERVICES.find(
+          (s) => s.slug === targetSlugOrId || s.id === targetSlugOrId
+        );
+        if (found) {
+          setSelectedServiceModal(found);
+        }
+      }
+    };
+
+    handleCheckHash();
+    window.addEventListener('popstate', handleCheckHash);
+    return () => window.removeEventListener('popstate', handleCheckHash);
+  }, []);
+
+  // Update hash when selectedServiceModal changes
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (selectedServiceModal) {
+      const targetHash = `#service-${selectedServiceModal.slug || selectedServiceModal.id}`;
+      if (window.location.hash !== targetHash) {
+        window.history.replaceState(null, '', targetHash);
+      }
+    } else {
+      if (window.location.hash.startsWith('#service-')) {
+        window.history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
+    }
+  }, [selectedServiceModal]);
 
   // 6. Favorites state
   const [favorites, setFavorites] = useState<string[]>(() => {
@@ -439,7 +501,7 @@ export default function App() {
   const unreadNotificationsCount = notifications.filter((n) => !n.isRead).length;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex flex-col selection:bg-blue-500 selection:text-white transition-colors duration-300 relative overflow-x-hidden pt-16 pb-16 md:pb-0">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white flex flex-col selection:bg-blue-500 selection:text-white transition-colors duration-300 relative overflow-x-hidden pt-16 pb-16 md:pb-0">
       
       {/* 0. Native & Web App Splash Screen */}
       {showSplash && (
@@ -452,6 +514,8 @@ export default function App() {
       {/* Sticky Navigation Bar */}
       <Navbar
         lang={lang}
+        theme={theme}
+        onToggleTheme={toggleTheme}
         currentView={currentView}
         onNavigate={(view) => setCurrentView(view)}
         user={user}
@@ -500,9 +564,6 @@ export default function App() {
               onOpenPricing={() => setIsPricingModalOpen(true)}
               onOpenSubmit={() => setIsSubmitModalOpen(true)}
             />
-
-            {/* 1.1 Enthusiastic Sudanese Dialect Audio Ad Banner */}
-            <SudanesePromoAudioPlayer lang={lang} />
 
             {/* 2. Most Used Services Section */}
             {!searchQuery && selectedQuickFilter === 'all' && selectedCategory === 'all' && (

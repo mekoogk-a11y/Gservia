@@ -27,13 +27,17 @@ import {
   Building2,
   Smartphone,
   ChevronDown,
-  Grid
+  Grid,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 export type MainViewType = 'services' | 'categories' | 'dashboard' | 'integrations' | 'marketplace' | 'developers' | 'account' | 'admin';
 
 interface NavbarProps {
   lang: Language;
+  theme?: Theme;
+  onToggleTheme?: () => void;
   currentView: MainViewType;
   onNavigate: (view: MainViewType) => void;
   user: UserProfile | null;
@@ -55,6 +59,8 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({
   lang,
+  theme = 'dark',
+  onToggleTheme,
   currentView,
   onNavigate,
   user,
@@ -363,6 +369,23 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
               </div>
 
+              {/* Theme Toggle (Light / Dark Mode) */}
+              {onToggleTheme && (
+                <button
+                  id="nav-theme-toggle"
+                  onClick={onToggleTheme}
+                  title={theme === 'dark' ? (lang === 'ar' ? 'التحويل إلى الوضع المضيء (Light Mode)' : 'Switch to Light Mode') : (lang === 'ar' ? 'التحويل إلى الوضع الليلي (Dark Mode)' : 'Switch to Dark Mode')}
+                  aria-label="Toggle Theme"
+                  className="p-2 rounded-xl text-slate-300 hover:text-amber-400 bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {theme === 'dark' ? (
+                    <Sun className="w-4 h-4 text-amber-400" />
+                  ) : (
+                    <Moon className="w-4 h-4 text-blue-400" />
+                  )}
+                </button>
+              )}
+
               {/* 🌟 1. PROMINENT LANGUAGE SELECTOR BUTTON (TOP CORNER) */}
               <button
                 id="nav-lang-toggle"
@@ -438,6 +461,8 @@ export const Navbar: React.FC<NavbarProps> = ({
         isOpen={isMegaDrawerOpen}
         onClose={() => setIsMegaDrawerOpen(false)}
         lang={lang}
+        theme={theme}
+        onToggleTheme={onToggleTheme}
         currentView={currentView}
         onNavigate={handleNavClick}
         user={user}

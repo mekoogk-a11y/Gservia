@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Language, UserProfile } from '../types';
+import { Language, Theme, UserProfile } from '../types';
 import { getTranslation, SUPPORTED_LANGUAGES } from '../data/translations';
 import { GServiaLogo } from './GServiaLogo';
 import { MainViewType } from './Navbar';
@@ -26,13 +26,17 @@ import {
   MessageCircle,
   Mail,
   Zap,
-  Grid
+  Grid,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 interface NavigationMegaDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   lang: Language;
+  theme?: Theme;
+  onToggleTheme?: () => void;
   currentView: MainViewType;
   onNavigate: (view: MainViewType) => void;
   user: UserProfile | null;
@@ -55,6 +59,8 @@ export const NavigationMegaDrawer: React.FC<NavigationMegaDrawerProps> = ({
   isOpen,
   onClose,
   lang,
+  theme = 'dark',
+  onToggleTheme,
   currentView,
   onNavigate,
   user,
@@ -168,6 +174,22 @@ export const NavigationMegaDrawer: React.FC<NavigationMegaDrawerProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Theme Toggle Button inside Drawer */}
+            {onToggleTheme && (
+              <button
+                id="drawer-theme-btn"
+                onClick={onToggleTheme}
+                className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-bold text-slate-200 flex items-center justify-center transition-colors"
+                title={theme === 'dark' ? (lang === 'ar' ? 'الوضع المضيء' : 'Light Mode') : (lang === 'ar' ? 'الوضع الليلي' : 'Dark Mode')}
+              >
+                {theme === 'dark' ? (
+                  <Sun className="w-4 h-4 text-amber-400" />
+                ) : (
+                  <Moon className="w-4 h-4 text-blue-400" />
+                )}
+              </button>
+            )}
+
             {/* Quick Language Trigger inside Drawer */}
             <button
               id="drawer-lang-btn"
